@@ -244,17 +244,21 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
         </label>
       </div>
 
-      <div className="overflow-hidden rounded-xl bg-surface">
-        {filteredMatches.map((match, i) => (
-          <MatchListItem
-            key={match.id}
-            match={match}
-            isLast={i === filteredMatches.length - 1}
-            onOpen={() => onOpen(match)}
-            onDelete={() => onDelete(match)}
-          />
-        ))}
-      </div>
+      {filteredMatches.length === 0 ? (
+        <p className="mt-8 text-center text-gray-400">No hay partidos con este filtro</p>
+      ) : (
+        <div className="overflow-hidden rounded-xl bg-surface">
+          {filteredMatches.map((match, i) => (
+            <MatchListItem
+              key={match.id}
+              match={match}
+              isLast={i === filteredMatches.length - 1}
+              onOpen={() => onOpen(match)}
+              onDelete={() => onDelete(match)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
