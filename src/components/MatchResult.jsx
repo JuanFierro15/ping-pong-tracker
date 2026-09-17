@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { countSetsWon } from '../utils/gameLogic'
-import { TrophyIcon } from './icons'
+import { shareMatchResult } from '../utils/shareMatch'
+import { ShareIcon, TrophyIcon } from './icons'
 
 const CONFETTI_COLORS = ['#f97316', '#eef2ea', '#f59e0b', '#15803d', '#fb923c']
 const CONFETTI = Array.from({ length: 16 }, (_, i) => ({
@@ -11,6 +13,15 @@ const CONFETTI = Array.from({ length: 16 }, (_, i) => ({
 export default function MatchResult({ player1Name, player2Name, sets, winner, onNewMatch }) {
   const setsWon = countSetsWon(sets)
   const winnerName = winner === 'player1' ? player1Name : player2Name
+  const [toast, setToast] = useState(null)
+
+  async function handleShare() {
+    const result = await shareMatchResult({ player1Name, player2Name, sets })
+    if (result === 'copied') {
+      setToast('Resultado copiado')
+      setTimeout(() => setToast(null), 2500)
+    }
+  }
 
   return (
     <div className="relative flex h-full flex-col items-center justify-center gap-8 overflow-hidden p-6 text-center">
@@ -53,13 +64,30 @@ export default function MatchResult({ player1Name, player2Name, sets, winner, on
         ))}
       </div>
 
-      <button
-        type="button"
-        onClick={onNewMatch}
-        className="w-full max-w-sm rounded-2xl bg-accent py-5 text-xl font-bold text-white shadow-lg shadow-accent/30 active:scale-95 transition"
-      >
-        Nuevo partido
-      </button>
+      <div className="flex w-full max-w-sm flex-col gap-3">
+        <button
+          type="button"
+          onClick={handleShare}
+          className="flex items-center justify-center gap-2 rounded-2xl bg-surface py-4 text-base font-bold text-gray-100 active:scale-95 transition"
+        >
+          <ShareIcon className="h-5 w-5" />
+          Compartir resultado
+        </button>
+
+        <button
+          type="button"
+          onClick={onNewMatch}
+          className="rounded-2xl bg-accent py-5 text-xl font-bold text-white shadow-lg shadow-accent/30 active:scale-95 transition"
+        >
+          Nuevo partido
+        </button>
+      </div>
+
+      {toast && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-lg bg-surface-2 px-4 py-2 text-sm text-gray-100 shadow-lg">
+          {toast}
+        </div>
+      )}
     </div>
   )
 }
