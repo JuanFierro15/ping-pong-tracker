@@ -183,6 +183,8 @@ export default function HistoryScreen({ active }) {
 
 function MatchesTab({ matches, roster, onOpen, onDelete }) {
   const [playerFilter, setPlayerFilter] = useState('')
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
 
   if (matches.length === 0) {
     return (
@@ -192,13 +194,20 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
     )
   }
 
-  const filteredMatches = matches.filter(
-    (m) => !playerFilter || m.player1Name === playerFilter || m.player2Name === playerFilter
-  )
+  const fromBound = fromDate ? new Date(`${fromDate}T00:00:00`) : null
+  const toBound = toDate ? new Date(`${toDate}T23:59:59.999`) : null
+
+  const filteredMatches = matches.filter((m) => {
+    if (playerFilter && m.player1Name !== playerFilter && m.player2Name !== playerFilter) return false
+    const matchDate = new Date(m.date)
+    if (fromBound && matchDate < fromBound) return false
+    if (toBound && matchDate > toBound) return false
+    return true
+  })
 
   return (
     <div>
-      <div className="relative mb-3">
+      <div className="relative mb-2.5">
         <select
           value={playerFilter}
           onChange={(e) => setPlayerFilter(e.target.value)}
@@ -212,6 +221,27 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
           ))}
         </select>
         <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+      </div>
+
+      <div className="mb-3 flex gap-2">
+        <label className="flex-1 text-xs text-gray-500">
+          Desde
+          <input
+            type="date"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            className="mt-1 w-full rounded-xl bg-surface px-3 py-2 text-sm font-semibold text-gray-900 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)] outline-none"
+          />
+        </label>
+        <label className="flex-1 text-xs text-gray-500">
+          Hasta
+          <input
+            type="date"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            className="mt-1 w-full rounded-xl bg-surface px-3 py-2 text-sm font-semibold text-gray-900 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)] outline-none"
+          />
+        </label>
       </div>
 
       <div className="overflow-hidden rounded-xl bg-surface">
