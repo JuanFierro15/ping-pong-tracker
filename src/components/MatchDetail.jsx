@@ -1,15 +1,25 @@
 import { useState } from 'react'
 import { countSetsWon } from '../utils/gameLogic'
 import { updateMatchPlayerNames } from '../db'
-import { ChevronLeftIcon, PencilIcon, TrophyIcon } from './icons'
+import { shareMatchResult } from '../utils/shareMatch'
+import { ChevronLeftIcon, PencilIcon, ShareIcon, TrophyIcon } from './icons'
 
 export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpdated }) {
   const [editing, setEditing] = useState(false)
   const [player1Name, setPlayer1Name] = useState(match.player1Name)
   const [player2Name, setPlayer2Name] = useState(match.player2Name)
+  const [toast, setToast] = useState(null)
 
   const setsWon = countSetsWon(match.sets)
   const winnerName = match.winner === 'player1' ? match.player1Name : match.player2Name
+
+  async function handleShare() {
+    const result = await shareMatchResult(match)
+    if (result === 'copied') {
+      setToast('Resultado copiado')
+      setTimeout(() => setToast(null), 2500)
+    }
+  }
 
   async function handleSaveNames() {
     const name1 = player1Name.trim() || 'Jugador 1'
@@ -26,7 +36,7 @@ export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpd
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="relative flex h-full flex-col">
       <header className="flex items-center justify-between border-b border-black/10 px-3 py-3">
         <button
           type="button"
@@ -36,13 +46,23 @@ export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpd
           <ChevronLeftIcon className="h-4 w-4" />
           Volver
         </button>
-        <button
-          type="button"
-          onClick={onRequestDelete}
-          className="rounded-lg px-3 py-2 text-sm font-semibold text-red-500 active:bg-surface-2"
-        >
-          Borrar
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={handleShare}
+            aria-label="Compartir resultado"
+            className="rounded-lg p-2 text-gray-500 active:bg-surface-2"
+          >
+            <ShareIcon className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={onRequestDelete}
+            className="rounded-lg px-3 py-2 text-sm font-semibold text-red-500 active:bg-surface-2"
+          >
+            Borrar
+          </button>
+        </div>
       </header>
 
       <div className="flex-1 overflow-y-auto p-5">
@@ -127,6 +147,12 @@ export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpd
           ))}
         </div>
       </div>
+
+      {toast && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-lg bg-surface-2 px-4 py-2 text-sm text-gray-900 shadow-lg">
+          {toast}
+        </div>
+      )}
     </div>
   )
 }
