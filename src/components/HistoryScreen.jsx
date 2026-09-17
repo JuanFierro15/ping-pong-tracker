@@ -6,6 +6,7 @@ import ConfirmDialog from './ConfirmDialog'
 import MatchDetail from './MatchDetail'
 import PlayerStatsTab from './PlayerStatsTab'
 import HeadToHeadTab from './HeadToHeadTab'
+import EmptyState from './EmptyState'
 import { DownloadIcon, UploadIcon, TrashIcon, TrophyIcon, ChevronDownIcon } from './icons'
 
 const SUBTABS = [
@@ -187,11 +188,7 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
   const [toDate, setToDate] = useState('')
 
   if (matches.length === 0) {
-    return (
-      <p className="mt-8 text-center text-gray-400">
-        Todavía no hay partidos guardados. ¡Juega el primero!
-      </p>
-    )
+    return <EmptyState message="Aún no hay partidos jugados" />
   }
 
   const fromBound = fromDate ? new Date(`${fromDate}T00:00:00`) : null
@@ -245,7 +242,7 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
       </div>
 
       {filteredMatches.length === 0 ? (
-        <p className="mt-8 text-center text-gray-400">No hay partidos con este filtro</p>
+        <EmptyState message="No hay partidos con este filtro" />
       ) : (
         <div className="overflow-hidden rounded-xl bg-surface">
           {filteredMatches.map((match, i) => (
