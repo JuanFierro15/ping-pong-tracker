@@ -1,11 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #0f1115;
-  --color-surface: #1a1d24;
-  --color-surface-2: #23272f;
-  --color-player1: #dc2626;
-  --color-player2: #2563eb;
+  /* Marcador en vivo: mesa verde oscura, alto contraste para jugar de noche. */
+  --color-bg: #0b1f15;
+  --color-surface: #13291d;
+  --color-surface-2: #1c3526;
+  /* Los dos jugadores son la pelota naranja y la pelota blanca. */
+  --color-player1: #f97316;
+  --color-player2: #eef2ea;
+  --color-accent: #f97316;
+  --color-accent-dark: #ea580c;
+}
+
+/* Historial: se consulta con calma, tema claro y más denso.
+   Reemplaza las mismas variables solo dentro de este subárbol; el
+   naranja/blanco de la pelota se ajusta a algo legible sobre fondo claro. */
+.theme-history {
+  --color-bg: #f7f6ef;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef1e6;
+  --color-player1: #ea580c;
+  --color-player2: #15803d;
 }
 
 html,
@@ -25,6 +40,46 @@ body {
   user-select: none;
 }
 
-input {
+input,
+select {
   user-select: text;
+}
+
+@keyframes score-pulse {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.score-pulse {
+  animation: score-pulse 260ms ease;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(220px) rotate(320deg);
+    opacity: 0;
+  }
+}
+
+.confetti-piece {
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  animation: confetti-fall 2.4s ease-in infinite;
 }

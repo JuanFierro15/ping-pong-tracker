@@ -1,12 +1,22 @@
 import { useEffect, useRef, useState } from 'react'
 import { getAllMatches, deleteMatch, importMatches } from '../db'
 import { countSetsWon } from '../utils/gameLogic'
+import { getHeadToHeadStats, getPlayerTotals } from '../utils/matchStats'
 import ConfirmDialog from './ConfirmDialog'
 import MatchDetail from './MatchDetail'
-import HistorySummary from './HistorySummary'
+import PlayerStatsTab from './PlayerStatsTab'
+import HeadToHeadTab from './HeadToHeadTab'
+import { DownloadIcon, UploadIcon, TrashIcon, TrophyIcon } from './icons'
+
+const SUBTABS = [
+  { id: 'matches', label: 'Partidos' },
+  { id: 'player', label: 'Jugador' },
+  { id: 'h2h', label: 'Cara a cara' },
+]
 
 export default function HistoryScreen({ active }) {
   const [matches, setMatches] = useState(null)
+  const [subTab, setSubTab] = useState('matches')
   const [selectedMatch, setSelectedMatch] = useState(null)
   const [matchPendingDelete, setMatchPendingDelete] = useState(null)
   const [statusMessage, setStatusMessage] = useState(null)
@@ -73,78 +83,87 @@ export default function HistoryScreen({ active }) {
     setMatches((prev) => prev?.map((m) => (m.id === updatedMatch.id ? updatedMatch : m)) ?? prev)
   }
 
-  if (selectedMatch) {
-    return (
-      <MatchDetail
-        match={selectedMatch}
-        onBack={() => setSelectedMatch(null)}
-        onRequestDelete={() => setMatchPendingDelete(selectedMatch)}
-        onNamesUpdated={handleNamesUpdated}
-      />
-    )
-  }
+  const playerTotals = matches ? getPlayerTotals(matches) : []
+  const headToHeadStats = matches ? getHeadToHeadStats(matches) : []
+  const roster = playerTotals.map((p) => p.name)
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-        <h1 className="text-xl font-extrabold text-gray-100">Historial</h1>
-        <div className="flex gap-1">
-          <button
-            type="button"
-            onClick={handleExport}
-            aria-label="Exportar historial"
-            className="rounded-lg px-2 py-1.5 text-lg active:bg-surface-2"
-          >
-            ⬇️
-          </button>
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            aria-label="Importar historial"
-            className="rounded-lg px-2 py-1.5 text-lg active:bg-surface-2"
-          >
-            ⬆️
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="application/json"
-            onChange={handleImportFile}
-            className="hidden"
-          />
-        </div>
-      </header>
+      {selectedMatch ? (
+        <MatchDetail
+          match={selectedMatch}
+          onBack={() => setSelectedMatch(null)}
+          onRequestDelete={() => setMatchPendingDelete(selectedMatch)}
+          onNamesUpdated={handleNamesUpdated}
+        />
+      ) : (
+        <>
+          <header className="flex items-center justify-between px-5 pb-2.5 pt-4">
+            <h1 className="text-xl font-extrabold text-gray-900">Historial</h1>
+            <div className="flex gap-1">
+              <button
+                type="button"
+                onClick={handleExport}
+                aria-label="Exportar historial"
+                className="rounded-lg p-2 active:bg-surface-2"
+              >
+                <DownloadIcon className="h-4 w-4 text-gray-500" />
+              </button>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                aria-label="Importar historial"
+                className="rounded-lg p-2 active:bg-surface-2"
+              >
+                <UploadIcon className="h-4 w-4 text-gray-500" />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="application/json"
+                onChange={handleImportFile}
+                className="hidden"
+              />
+            </div>
+          </header>
 
-      {statusMessage && (
-        <div className="mx-4 mt-3 rounded-lg bg-surface-2 px-3 py-2 text-sm text-gray-200">
-          {statusMessage}
-        </div>
+          <div className="flex gap-1.5 px-4 pb-3">
+            {SUBTABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setSubTab(tab.id)}
+                className={`flex-1 rounded-lg py-2 text-xs font-bold transition ${
+                  subTab === tab.id ? 'bg-accent text-white shadow-md shadow-accent/30' : 'bg-surface-2 text-gray-500'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
+            {statusMessage && (
+              <div className="mb-3 rounded-lg bg-surface-2 px-3 py-2 text-sm text-gray-700">{statusMessage}</div>
+            )}
+
+            {matches === null && <p className="mt-8 text-center text-gray-400">Cargando…</p>}
+
+            {matches !== null && subTab === 'matches' && (
+              <MatchesTab matches={matches} onOpen={setSelectedMatch} onDelete={setMatchPendingDelete} />
+            )}
+
+            {matches !== null && subTab === 'player' && <PlayerStatsTab playerTotals={playerTotals} />}
+
+            {matches !== null && subTab === 'h2h' && (
+              <HeadToHeadTab roster={roster} headToHeadStats={headToHeadStats} />
+            )}
+          </div>
+        </>
       )}
 
-      <div className="flex-1 overflow-y-auto px-4 py-3">
-        {matches === null && <p className="mt-8 text-center text-gray-500">Cargando…</p>}
-
-        {matches?.length === 0 && (
-          <p className="mt-8 text-center text-gray-500">
-            Todavía no hay partidos guardados. ¡Juega el primero!
-          </p>
-        )}
-
-        {matches?.length > 0 && <HistorySummary matches={matches} />}
-
-        <div className="space-y-3">
-          {matches?.map((match) => (
-            <MatchListItem
-              key={match.id}
-              match={match}
-              onOpen={() => setSelectedMatch(match)}
-              onDelete={() => setMatchPendingDelete(match)}
-            />
-          ))}
-        </div>
-      </div>
-
       <ConfirmDialog
+        theme="light"
         open={Boolean(matchPendingDelete)}
         title="¿Borrar partido?"
         message="Esta acción no se puede deshacer."
@@ -157,35 +176,62 @@ export default function HistoryScreen({ active }) {
   )
 }
 
-function MatchListItem({ match, onOpen, onDelete }) {
+function MatchesTab({ matches, onOpen, onDelete }) {
+  if (matches.length === 0) {
+    return (
+      <p className="mt-8 text-center text-gray-400">
+        Todavía no hay partidos guardados. ¡Juega el primero!
+      </p>
+    )
+  }
+
+  return (
+    <div className="overflow-hidden rounded-xl bg-surface">
+      {matches.map((match, i) => (
+        <MatchListItem
+          key={match.id}
+          match={match}
+          isLast={i === matches.length - 1}
+          onOpen={() => onOpen(match)}
+          onDelete={() => onDelete(match)}
+        />
+      ))}
+    </div>
+  )
+}
+
+function MatchListItem({ match, isLast, onOpen, onDelete }) {
   const setsWon = countSetsWon(match.sets)
   const winnerName = match.winner === 'player1' ? match.player1Name : match.player2Name
 
   return (
-    <div className="flex items-stretch gap-2">
+    <div className={`flex items-stretch gap-1 ${isLast ? '' : 'border-b border-black/10'}`}>
       <button
         type="button"
         onClick={onOpen}
-        className="flex-1 rounded-xl bg-surface px-4 py-3 text-left active:bg-surface-2 transition"
+        className="flex-1 px-4 py-3 text-left active:bg-surface-2 transition"
       >
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-400">{formatDate(match.date)}</span>
-          <span className="text-lg font-bold tabular-nums text-gray-100">
+          <span className="text-xs text-gray-400">{formatDate(match.date)}</span>
+          <span className="text-base font-bold tabular-nums text-gray-900">
             {setsWon.player1} - {setsWon.player2}
           </span>
         </div>
-        <div className="mt-1 text-base font-semibold text-gray-100">
+        <div className="mt-0.5 text-sm font-semibold text-gray-900">
           {match.player1Name} vs {match.player2Name}
         </div>
-        <div className="mt-0.5 text-sm text-emerald-500">🏆 {winnerName}</div>
+        <div className="mt-0.5 flex items-center gap-1 text-xs font-semibold text-accent">
+          <TrophyIcon className="h-3 w-3" />
+          {winnerName}
+        </div>
       </button>
       <button
         type="button"
         onClick={onDelete}
         aria-label="Borrar partido"
-        className="w-12 shrink-0 rounded-xl bg-surface text-red-500 active:bg-surface-2 transition"
+        className="w-11 shrink-0 flex items-center justify-center text-red-500 active:bg-surface-2 transition"
       >
-        🗑
+        <TrashIcon className="h-4 w-4" />
       </button>
     </div>
   )

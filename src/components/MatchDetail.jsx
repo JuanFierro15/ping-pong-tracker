@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { countSetsWon } from '../utils/gameLogic'
 import { updateMatchPlayerNames } from '../db'
+import { ChevronLeftIcon, PencilIcon, TrophyIcon } from './icons'
 
 export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpdated }) {
   const [editing, setEditing] = useState(false)
@@ -26,13 +27,14 @@ export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpd
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex items-center justify-between border-b border-white/10 px-3 py-3">
+      <header className="flex items-center justify-between border-b border-black/10 px-3 py-3">
         <button
           type="button"
           onClick={onBack}
-          className="rounded-lg px-3 py-2 text-sm font-semibold text-gray-300 active:bg-surface-2"
+          className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 active:bg-surface-2"
         >
-          ← Volver
+          <ChevronLeftIcon className="h-4 w-4" />
+          Volver
         </button>
         <button
           type="button"
@@ -44,7 +46,7 @@ export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpd
       </header>
 
       <div className="flex-1 overflow-y-auto p-5">
-        <p className="text-sm text-gray-400">{formatDate(match.date)}</p>
+        <p className="text-sm text-gray-500">{formatDate(match.date)}</p>
 
         {editing ? (
           <div className="mt-2 space-y-2">
@@ -53,27 +55,27 @@ export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpd
               value={player1Name}
               maxLength={20}
               onChange={(e) => setPlayer1Name(e.target.value)}
-              className="w-full rounded-lg bg-surface-2 px-3 py-2 text-lg text-gray-100 outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-emerald-500"
+              className="w-full rounded-lg bg-surface-2 px-3 py-2 text-lg text-gray-900 outline-none ring-1 ring-black/10 focus:ring-2 focus:ring-accent"
             />
             <input
               type="text"
               value={player2Name}
               maxLength={20}
               onChange={(e) => setPlayer2Name(e.target.value)}
-              className="w-full rounded-lg bg-surface-2 px-3 py-2 text-lg text-gray-100 outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-emerald-500"
+              className="w-full rounded-lg bg-surface-2 px-3 py-2 text-lg text-gray-900 outline-none ring-1 ring-black/10 focus:ring-2 focus:ring-accent"
             />
             <div className="flex gap-2 pt-1">
               <button
                 type="button"
                 onClick={handleCancelEdit}
-                className="flex-1 rounded-lg bg-surface-2 py-2 text-sm font-semibold text-gray-300 active:scale-95 transition"
+                className="flex-1 rounded-lg bg-surface-2 py-2 text-sm font-semibold text-gray-700 active:scale-95 transition"
               >
                 Cancelar
               </button>
               <button
                 type="button"
                 onClick={handleSaveNames}
-                className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm font-semibold text-white active:scale-95 transition"
+                className="flex-1 rounded-lg bg-accent py-2 text-sm font-semibold text-white active:scale-95 transition"
               >
                 Guardar
               </button>
@@ -81,23 +83,26 @@ export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpd
           </div>
         ) : (
           <div className="mt-1 flex items-center gap-2">
-            <h1 className="text-2xl font-extrabold text-gray-100">
+            <h1 className="text-2xl font-extrabold text-gray-900">
               {match.player1Name} vs {match.player2Name}
             </h1>
             <button
               type="button"
               onClick={() => setEditing(true)}
               aria-label="Editar nombres"
-              className="shrink-0 rounded-lg px-2 py-1 text-sm text-gray-500 active:bg-surface-2"
+              className="shrink-0 rounded-lg p-1.5 text-gray-400 active:bg-surface-2"
             >
-              ✏️
+              <PencilIcon className="h-4 w-4" />
             </button>
           </div>
         )}
 
-        <p className="mt-2 text-lg">
-          <span className="font-bold text-emerald-500">🏆 {winnerName}</span>
-          <span className="ml-2 text-gray-400">
+        <p className="mt-2 flex items-center gap-2 text-lg">
+          <span className="flex items-center gap-1.5 font-bold text-accent">
+            <TrophyIcon className="h-4 w-4" />
+            {winnerName}
+          </span>
+          <span className="text-gray-500">
             ({setsWon.player1} - {setsWon.player2})
           </span>
         </p>
@@ -108,13 +113,13 @@ export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpd
               key={set.setNumber}
               className="flex items-center justify-between rounded-xl bg-surface px-4 py-3"
             >
-              <span className="text-sm text-gray-400">Set {set.setNumber}</span>
+              <span className="text-sm text-gray-500">Set {set.setNumber}</span>
               <span className="text-lg font-bold tabular-nums">
-                <span className={set.winner === 'player1' ? 'text-player1' : 'text-gray-100'}>
+                <span className={set.winner === 'player1' ? 'text-player1' : 'text-gray-900'}>
                   {set.player1Points}
                 </span>
-                <span className="text-gray-500"> - </span>
-                <span className={set.winner === 'player2' ? 'text-player2' : 'text-gray-100'}>
+                <span className="text-gray-400"> - </span>
+                <span className={set.winner === 'player2' ? 'text-player2' : 'text-gray-900'}>
                   {set.player2Points}
                 </span>
               </span>

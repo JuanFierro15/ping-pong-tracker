@@ -2,10 +2,11 @@ import { useState } from 'react'
 import MatchScreen from './components/MatchScreen'
 import HistoryScreen from './components/HistoryScreen'
 import { useInstallPrompt } from './hooks/useInstallPrompt'
+import { PaddleIcon, BallIcon, XIcon } from './components/icons'
 
 const TABS = [
-  { id: 'match', label: 'Partido', icon: '🏓' },
-  { id: 'history', label: 'Historial', icon: '📋' },
+  { id: 'match', label: 'Partido', Icon: PaddleIcon },
+  { id: 'history', label: 'Historial', Icon: BallIcon },
 ]
 
 export default function App() {
@@ -16,8 +17,8 @@ export default function App() {
   return (
     <div className="flex h-dvh flex-col bg-bg">
       {canInstall && !installBannerDismissed && (
-        <div className="flex items-center justify-between gap-2 bg-emerald-700 px-4 py-2 text-sm text-white">
-          <span>📲 Instala la app para usarla sin conexión</span>
+        <div className="flex items-center justify-between gap-2 bg-accent-dark px-4 py-2 text-sm text-white">
+          <span>Instala la app para usarla sin conexión</span>
           <div className="flex shrink-0 gap-2">
             <button
               type="button"
@@ -30,9 +31,9 @@ export default function App() {
               type="button"
               onClick={() => setInstallBannerDismissed(true)}
               aria-label="Cerrar aviso de instalación"
-              className="px-1 font-semibold text-white/80"
+              className="p-1 text-white/80"
             >
-              ✕
+              <XIcon className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -44,22 +45,26 @@ export default function App() {
         <div className={`h-full ${activeTab === 'match' ? '' : 'hidden'}`}>
           <MatchScreen />
         </div>
-        <div className={`h-full ${activeTab === 'history' ? '' : 'hidden'}`}>
+        <div className={`h-full ${activeTab === 'history' ? 'theme-history bg-bg text-gray-900' : 'hidden'}`}>
           <HistoryScreen active={activeTab === 'history'} />
         </div>
       </main>
 
-      <nav className="flex border-t border-white/10 bg-surface pb-[env(safe-area-inset-bottom)]">
+      <nav
+        className={`relative flex border-t pb-[env(safe-area-inset-bottom)] transition-colors ${
+          activeTab === 'history' ? 'theme-history border-black/10 bg-surface' : 'border-white/10 bg-surface'
+        }`}
+      >
         {TABS.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 text-xs font-semibold transition ${
-              activeTab === tab.id ? 'text-emerald-500' : 'text-gray-500'
+            className={`flex flex-1 flex-col items-center gap-1 py-2.5 text-xs font-semibold transition ${
+              activeTab === tab.id ? 'text-accent' : 'text-gray-500'
             }`}
           >
-            <span className="text-xl leading-none">{tab.icon}</span>
+            <tab.Icon className="h-5 w-5" />
             {tab.label}
           </button>
         ))}

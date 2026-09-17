@@ -17,7 +17,14 @@ export function getPlayerTotals(matches) {
 
       const key = normalizeKey(name)
       if (!totals.has(key)) {
-        totals.set(key, { name, matchesPlayed: 0, matchesWon: 0, setsWon: 0, setsLost: 0 })
+        totals.set(key, {
+          name,
+          matchesPlayed: 0,
+          matchesWon: 0,
+          setsWon: 0,
+          setsLost: 0,
+          totalPoints: 0,
+        })
       }
       const t = totals.get(key)
       t.name = name
@@ -27,6 +34,10 @@ export function getPlayerTotals(matches) {
       const sets = countSetsWon(match.sets)
       t.setsWon += side === 'player1' ? sets.player1 : sets.player2
       t.setsLost += side === 'player1' ? sets.player2 : sets.player1
+
+      for (const set of match.sets) {
+        t.totalPoints += side === 'player1' ? set.player1Points : set.player2Points
+      }
     }
   }
 
@@ -47,7 +58,7 @@ export function getHeadToHeadStats(matches) {
 
     const pairKey = [keyA, keyB].sort().join('|')
     if (!pairs.has(pairKey)) {
-      pairs.set(pairKey, { names: {}, wins: {}, setsWon: {}, totalMatches: 0, results: [] })
+      pairs.set(pairKey, { names: {}, wins: {}, setsWon: {}, pointsScored: {}, totalMatches: 0, results: [] })
     }
     const entry = pairs.get(pairKey)
     entry.names[keyA] = nameA
@@ -56,6 +67,8 @@ export function getHeadToHeadStats(matches) {
     entry.wins[keyB] ??= 0
     entry.setsWon[keyA] ??= 0
     entry.setsWon[keyB] ??= 0
+    entry.pointsScored[keyA] ??= 0
+    entry.pointsScored[keyB] ??= 0
     entry.totalMatches += 1
 
     const winnerKey = match.winner === 'player1' ? keyA : keyB
@@ -65,6 +78,13 @@ export function getHeadToHeadStats(matches) {
     const sets = countSetsWon(match.sets)
     entry.setsWon[keyA] += sets.player1
     entry.setsWon[keyB] += sets.player2
+
+    // Puntos anotados por cada uno en todos los sets jugados entre ambos,
+    // no solo los sets/partidos ganados.
+    for (const set of match.sets) {
+      entry.pointsScored[keyA] += set.player1Points
+      entry.pointsScored[keyB] += set.player2Points
+    }
   }
 
   return Array.from(pairs.values())
@@ -80,6 +100,8 @@ export function getHeadToHeadStats(matches) {
         winsB: entry.wins[keyB],
         setsA: entry.setsWon[keyA],
         setsB: entry.setsWon[keyB],
+        pointsA: entry.pointsScored[keyA],
+        pointsB: entry.pointsScored[keyB],
         totalMatches: entry.totalMatches,
         streak: streak && { name: entry.names[streak.key], count: streak.count },
       }

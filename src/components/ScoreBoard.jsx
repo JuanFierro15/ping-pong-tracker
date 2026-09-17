@@ -1,4 +1,5 @@
 import { countSetsWon } from '../utils/gameLogic'
+import { UndoIcon, XIcon } from './icons'
 
 export default function ScoreBoard({
   player1Name,
@@ -29,8 +30,9 @@ export default function ScoreBoard({
         <button
           type="button"
           onClick={onRequestCancel}
-          className="rounded-lg px-3 py-2 text-xs font-semibold text-gray-400 active:bg-surface-2"
+          className="flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-gray-400 active:bg-surface-2"
         >
+          <XIcon className="h-3.5 w-3.5" />
           Cancelar
         </button>
 
@@ -49,8 +51,9 @@ export default function ScoreBoard({
           type="button"
           onClick={onUndo}
           disabled={!canUndo}
-          className="rounded-lg px-3 py-2 text-xs font-semibold text-gray-400 disabled:opacity-30 active:bg-surface-2"
+          className="flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-gray-400 disabled:opacity-30 active:bg-surface-2"
         >
+          <UndoIcon className="h-3.5 w-3.5" />
           Deshacer
         </button>
       </div>
@@ -75,7 +78,9 @@ function PlayerHalf({ name, points, setsWon, colorClass, rotate, onTap }) {
       style={rotate ? { transform: 'rotate(180deg)' } : undefined}
     >
       <span className="max-w-[80%] truncate text-lg font-bold">{name}</span>
-      <span className="text-[7rem] font-black leading-none tabular-nums">{points}</span>
+      <span key={points} className="score-pulse text-[7rem] font-black leading-none tabular-nums">
+        {points}
+      </span>
       <SetDots won={setsWon} />
       <span className="text-xs text-gray-500">Toca para sumar punto</span>
     </button>
