@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ChevronDownIcon } from './icons'
+import EmptyState from './EmptyState'
 
 export default function PlayerStatsTab({ playerTotals }) {
   const roster = playerTotals.map((p) => p.name)
@@ -14,7 +15,7 @@ export default function PlayerStatsTab({ playerTotals }) {
   }, [roster.join('|')])
 
   if (playerTotals.length === 0) {
-    return <p className="mt-10 text-center text-sm text-gray-400">Aún no hay datos de jugadores.</p>
+    return <EmptyState message="Aún no hay partidos jugados" />
   }
 
   const stats = playerTotals.find((p) => p.name === selected) ?? playerTotals[0]
