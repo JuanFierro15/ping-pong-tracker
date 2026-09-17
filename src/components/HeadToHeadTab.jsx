@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ChevronDownIcon } from './icons'
+import EmptyState from './EmptyState'
 
 function normalizeKey(name) {
   return name.trim().toLowerCase()
@@ -27,7 +28,7 @@ export default function HeadToHeadTab({ roster, headToHeadStats }) {
   }, [roster.join('|')])
 
   if (roster.length === 0) {
-    return <p className="mt-10 text-center text-sm text-gray-400">Aún no hay enfrentamientos registrados.</p>
+    return <EmptyState message="Aún no hay partidos jugados" />
   }
 
   const sameSelection = playerA && playerB && normalizeKey(playerA) === normalizeKey(playerB)
@@ -52,9 +53,7 @@ export default function HeadToHeadTab({ roster, headToHeadStats }) {
         </p>
       )}
 
-      {!sameSelection && !oriented && (
-        <p className="mt-6 text-center text-sm text-gray-400">Todavía no se han enfrentado.</p>
-      )}
+      {!sameSelection && !oriented && <EmptyState message="Aún no se han enfrentado" />}
 
       {!sameSelection && oriented && (
         <div className="flex flex-col gap-3 rounded-xl bg-surface p-4 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)]">
