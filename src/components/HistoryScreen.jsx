@@ -6,7 +6,7 @@ import ConfirmDialog from './ConfirmDialog'
 import MatchDetail from './MatchDetail'
 import PlayerStatsTab from './PlayerStatsTab'
 import HeadToHeadTab from './HeadToHeadTab'
-import { DownloadIcon, UploadIcon, TrashIcon, TrophyIcon } from './icons'
+import { DownloadIcon, UploadIcon, TrashIcon, TrophyIcon, ChevronDownIcon } from './icons'
 
 const SUBTABS = [
   { id: 'matches', label: 'Partidos' },
@@ -150,7 +150,12 @@ export default function HistoryScreen({ active }) {
             {matches === null && <p className="mt-8 text-center text-gray-400">Cargando…</p>}
 
             {matches !== null && subTab === 'matches' && (
-              <MatchesTab matches={matches} onOpen={setSelectedMatch} onDelete={setMatchPendingDelete} />
+              <MatchesTab
+                matches={matches}
+                roster={roster}
+                onOpen={setSelectedMatch}
+                onDelete={setMatchPendingDelete}
+              />
             )}
 
             {matches !== null && subTab === 'player' && <PlayerStatsTab playerTotals={playerTotals} />}
@@ -176,7 +181,9 @@ export default function HistoryScreen({ active }) {
   )
 }
 
-function MatchesTab({ matches, onOpen, onDelete }) {
+function MatchesTab({ matches, roster, onOpen, onDelete }) {
+  const [playerFilter, setPlayerFilter] = useState('')
+
   if (matches.length === 0) {
     return (
       <p className="mt-8 text-center text-gray-400">
@@ -185,17 +192,39 @@ function MatchesTab({ matches, onOpen, onDelete }) {
     )
   }
 
+  const filteredMatches = matches.filter(
+    (m) => !playerFilter || m.player1Name === playerFilter || m.player2Name === playerFilter
+  )
+
   return (
-    <div className="overflow-hidden rounded-xl bg-surface">
-      {matches.map((match, i) => (
-        <MatchListItem
-          key={match.id}
-          match={match}
-          isLast={i === matches.length - 1}
-          onOpen={() => onOpen(match)}
-          onDelete={() => onDelete(match)}
-        />
-      ))}
+    <div>
+      <div className="relative mb-3">
+        <select
+          value={playerFilter}
+          onChange={(e) => setPlayerFilter(e.target.value)}
+          className="w-full appearance-none rounded-xl bg-surface px-3.5 py-2.5 text-sm font-bold text-gray-900 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)] outline-none"
+        >
+          <option value="">Todos los jugadores</option>
+          {roster.map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+        <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+      </div>
+
+      <div className="overflow-hidden rounded-xl bg-surface">
+        {filteredMatches.map((match, i) => (
+          <MatchListItem
+            key={match.id}
+            match={match}
+            isLast={i === filteredMatches.length - 1}
+            onOpen={() => onOpen(match)}
+            onDelete={() => onDelete(match)}
+          />
+        ))}
+      </div>
     </div>
   )
 }
