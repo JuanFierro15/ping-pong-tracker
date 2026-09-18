@@ -250,6 +250,7 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
               key={match.id}
               match={match}
               isLast={i === filteredMatches.length - 1}
+              delay={Math.min(i * 45, 320)}
               onOpen={() => onOpen(match)}
               onDelete={() => onDelete(match)}
             />
@@ -260,12 +261,15 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
   )
 }
 
-function MatchListItem({ match, isLast, onOpen, onDelete }) {
+function MatchListItem({ match, isLast, delay, onOpen, onDelete }) {
   const setsWon = countSetsWon(match.sets)
   const winnerName = match.winner === 'player1' ? match.player1Name : match.player2Name
 
   return (
-    <div className={`flex items-stretch gap-1 ${isLast ? '' : 'border-b border-black/10'}`}>
+    <div
+      className={`row-in flex items-stretch gap-1 ${isLast ? '' : 'border-b border-black/10'}`}
+      style={{ animationDelay: `${delay}ms` }}
+    >
       <button
         type="button"
         onClick={onOpen}

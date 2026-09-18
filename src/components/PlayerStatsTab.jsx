@@ -37,26 +37,29 @@ export default function PlayerStatsTab({ playerTotals }) {
         <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
       </div>
 
-      <div className="grid grid-cols-2 gap-2.5">
+      <div key={selected} className="grid grid-cols-2 gap-2.5">
         <StatTile
           value={`${stats.matchesWon}/${stats.matchesPlayed}`}
           label="Partidos ganados"
+          delay={0}
         />
-        <StatTile value={`${stats.setsWon}-${stats.setsLost}`} label="Sets ganados" />
+        <StatTile value={`${stats.setsWon}-${stats.setsLost}`} label="Sets ganados" delay={60} />
         <StatTile
           className="col-span-2"
           value={stats.totalPoints}
           label="Puntos anotados en total"
+          delay={120}
         />
       </div>
     </div>
   )
 }
 
-function StatTile({ value, label, className = '' }) {
+function StatTile({ value, label, className = '', delay = 0 }) {
   return (
     <div
-      className={`flex flex-col gap-0.5 rounded-xl bg-surface px-3.5 py-3 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)] ${className}`}
+      className={`row-in flex flex-col gap-0.5 rounded-xl bg-surface px-3.5 py-3 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)] ${className}`}
+      style={{ animationDelay: `${delay}ms` }}
     >
       <span className="text-lg font-extrabold tabular-nums text-gray-900">{value}</span>
       <span className="text-[10.5px] font-bold uppercase tracking-wide text-gray-400">{label}</span>
