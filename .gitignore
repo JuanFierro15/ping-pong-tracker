@@ -31,6 +31,12 @@ coverage
 *.sw?
 *~
 
+# Playwright (usado por scripts/capture-screenshots.mjs)
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/blob-report/
+
 # OS (Windows / macOS)
 Thumbs.db
 ehthumbs.db
