@@ -4,10 +4,15 @@ import { shareMatchResult } from '../utils/shareMatch'
 import { ShareIcon, TrophyIcon } from './icons'
 
 const CONFETTI_COLORS = ['#f97316', '#eef2ea', '#f59e0b', '#15803d', '#fb923c']
-const CONFETTI = Array.from({ length: 16 }, (_, i) => ({
-  left: (i * 6.3) % 100,
-  delay: (i % 8) * 0.18,
+const CONFETTI = Array.from({ length: 18 }, (_, i) => ({
+  left: (i * 5.6) % 100,
+  delay: (i % 9) * 0.16,
   color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+}))
+const STREAMERS = Array.from({ length: 10 }, (_, i) => ({
+  left: (i * 10 + 4) % 100,
+  delay: (i % 6) * 0.22,
+  color: CONFETTI_COLORS[(i + 2) % CONFETTI_COLORS.length],
 }))
 
 export default function MatchResult({ player1Name, player2Name, sets, winner, onNewMatch }) {
@@ -32,23 +37,36 @@ export default function MatchResult({ player1Name, player2Name, sets, winner, on
           style={{ left: `${c.left}%`, backgroundColor: c.color, animationDelay: `${c.delay}s` }}
         />
       ))}
+      {STREAMERS.map((s, i) => (
+        <span
+          key={i}
+          className="streamer-piece"
+          style={{ left: `${s.left}%`, backgroundColor: s.color, animationDelay: `${s.delay}s` }}
+        />
+      ))}
 
-      <div>
+      <div className="relative">
+        <div className="glow-pulse absolute -inset-[18px] rounded-full bg-accent/35 blur-md" />
+        <div className="trophy-in relative flex h-[76px] w-[76px] items-center justify-center overflow-hidden rounded-full bg-surface shadow-inner">
+          <span className="shine-sweep" />
+          <TrophyIcon className="relative h-[38px] w-[38px] text-accent" />
+        </div>
+      </div>
+
+      <div className="row-in" style={{ animationDelay: '120ms' }}>
         <p className="text-sm font-semibold uppercase tracking-widest text-accent">Partido terminado</p>
-        <h1 className="mt-2 flex items-center justify-center gap-2 text-3xl font-extrabold text-gray-100">
-          <TrophyIcon className="h-7 w-7 text-accent" />
-          {winnerName} gana
-        </h1>
+        <h1 className="mt-2 text-3xl font-extrabold text-gray-100">{winnerName} gana</h1>
         <p className="mt-1 text-lg text-gray-400">
           {setsWon.player1} - {setsWon.player2} en sets
         </p>
       </div>
 
-      <div className="w-full max-w-sm space-y-2 rounded-2xl bg-surface p-4">
-        {sets.map((set) => (
+      <div className="row-in w-full max-w-sm space-y-2 rounded-2xl bg-surface p-4" style={{ animationDelay: '220ms' }}>
+        {sets.map((set, i) => (
           <div
             key={set.setNumber}
-            className="flex items-center justify-between rounded-lg bg-surface-2 px-4 py-3 text-base"
+            className="row-in flex items-center justify-between rounded-lg bg-surface-2 px-4 py-3 text-base"
+            style={{ animationDelay: `${280 + i * 70}ms` }}
           >
             <span className="text-gray-400">Set {set.setNumber}</span>
             <span className="font-bold tabular-nums text-gray-100">
@@ -64,7 +82,7 @@ export default function MatchResult({ player1Name, player2Name, sets, winner, on
         ))}
       </div>
 
-      <div className="flex w-full max-w-sm flex-col gap-3">
+      <div className="row-in flex w-full max-w-sm flex-col gap-3" style={{ animationDelay: '420ms' }}>
         <button
           type="button"
           onClick={handleShare}
