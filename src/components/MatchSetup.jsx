@@ -8,9 +8,15 @@ export default function MatchSetup({
   onStart,
 }) {
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-8 p-6">
-      <div className="flex flex-col items-center gap-2 text-center">
-        <PaddleAndBallIcon className="h-11 w-11 text-gray-100" />
+    <div className="relative flex h-full flex-col items-center justify-center gap-8 overflow-hidden p-6">
+      <div className="orb-drift-a absolute -left-16 -top-20 h-56 w-56 rounded-full bg-accent/10 blur-2xl" />
+      <div className="orb-drift-b absolute -bottom-24 -right-16 h-60 w-60 rounded-full bg-white/5 blur-2xl" />
+
+      <div className="relative flex flex-col items-center gap-2 text-center">
+        <div className="icon-float relative h-[52px] w-[52px]">
+          <PaddleAndBallIcon className="h-[46px] w-[46px] text-gray-100" />
+          <span className="ball-orbit absolute right-0 top-1.5 h-[11px] w-[11px] rounded-full bg-accent shadow-[0_0_10px_rgba(249,115,22,0.8)]" />
+        </div>
         <h1 className="text-2xl font-extrabold text-gray-100">Nuevo partido</h1>
         <p className="text-sm text-gray-400">Al mejor de 3 sets, a 11 puntos</p>
       </div>
