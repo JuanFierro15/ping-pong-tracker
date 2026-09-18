@@ -150,3 +150,7 @@ El proyecto Android ya está generado en `android/`. Requiere **Android Studio**
 4. Si compilaste el APK sin conectar el celular, el archivo queda en `android/app/build/outputs/apk/debug/app-debug.apk` — pásalo al teléfono (cable, Drive, etc.), ábrelo desde el explorador de archivos y permite "instalar apps desconocidas" cuando lo pida.
 
 Nota: si el proyecto vive en una carpeta con tildes/ñ u otro caracter no-ASCII en la ruta (como pasa aquí con "AplicaciónPingPong"), `android/gradle.properties` ya tiene `android.overridePathCheck=true` para evitar que Gradle falle por eso.
+
+## Licencia
+
+[MIT](LICENSE)
