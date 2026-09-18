@@ -1,5 +1,21 @@
+import { useEffect, useRef, useState } from 'react'
 import { countSetsWon } from '../utils/gameLogic'
-import { UndoIcon, XIcon } from './icons'
+import { CheckIcon, UndoIcon, XIcon } from './icons'
+
+// Chispas que salen disparadas del número al anotar: ángulos repartidos en
+// círculo, con una pequeña variación por toque para que no se vean idénticas.
+function burstParticles(tick) {
+  const count = 9
+  return Array.from({ length: count }).map((_, i) => {
+    const angle = i * (360 / count) + ((tick * 13) % 40)
+    const dist = 42 + (i % 3) * 10
+    const rad = (angle * Math.PI) / 180
+    return {
+      dx: (Math.cos(rad) * dist).toFixed(1),
+      dy: (Math.sin(rad) * dist).toFixed(1),
+    }
+  })
+}
 
 export default function ScoreBoard({
   player1Name,
@@ -14,19 +30,43 @@ export default function ScoreBoard({
   onRequestCancel,
 }) {
   const setsWon = countSetsWon(sets)
+  const [tap, setTap] = useState({ player: null, tick: 0 })
+  const [setBanner, setSetBanner] = useState(null)
+  const prevSetsLength = useRef(sets.length)
+
+  useEffect(() => {
+    if (sets.length > prevSetsLength.current) {
+      const finished = sets[sets.length - 1]
+      const winnerName = finished.winner === 'player1' ? player1Name : player2Name
+      setSetBanner(
+        `Set ${finished.setNumber}: ${winnerName} gana ${finished.player1Points}-${finished.player2Points}`
+      )
+      const timer = setTimeout(() => setSetBanner(null), 2200)
+      prevSetsLength.current = sets.length
+      return () => clearTimeout(timer)
+    }
+    prevSetsLength.current = sets.length
+  }, [sets, player1Name, player2Name])
+
+  function handleTap(player, score) {
+    setTap((prev) => ({ player, tick: prev.tick + 1 }))
+    score()
+  }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="relative flex h-full flex-col">
       <PlayerHalf
         name={player2Name}
         points={currentPoints.player2}
         setsWon={setsWon.player2}
         colorClass="bg-player2/10 text-player2"
         rotate
-        onTap={onScorePlayer2}
+        active={tap.player === 'player2'}
+        tick={tap.tick}
+        onTap={() => handleTap('player2', onScorePlayer2)}
       />
 
-      <div className="flex items-center justify-between gap-2 bg-surface px-3 py-2">
+      <div className="relative z-10 flex items-center justify-between gap-2 bg-surface px-3 py-2">
         <button
           type="button"
           onClick={onRequestCancel}
@@ -63,13 +103,27 @@ export default function ScoreBoard({
         points={currentPoints.player1}
         setsWon={setsWon.player1}
         colorClass="bg-player1/10 text-player1"
-        onTap={onScorePlayer1}
+        active={tap.player === 'player1'}
+        tick={tap.tick}
+        onTap={() => handleTap('player1', onScorePlayer1)}
       />
+
+      {setBanner && (
+        <>
+          <div className="set-wipe pointer-events-none absolute inset-y-0 left-0 z-20 w-3/5 bg-gradient-to-r from-transparent via-accent to-transparent" />
+          <div className="set-banner card absolute left-1/2 top-20 z-30 flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 shadow-lg">
+            <CheckIcon className="h-3.5 w-3.5 text-accent" />
+            <span className="text-sm font-bold text-gray-100">{setBanner}</span>
+          </div>
+        </>
+      )}
     </div>
   )
 }
 
-function PlayerHalf({ name, points, setsWon, colorClass, rotate, onTap }) {
+function PlayerHalf({ name, points, setsWon, colorClass, rotate, active, tick, onTap }) {
+  const particles = active ? burstParticles(tick) : []
+
   return (
     <button
       type="button"
@@ -78,9 +132,29 @@ function PlayerHalf({ name, points, setsWon, colorClass, rotate, onTap }) {
       style={rotate ? { transform: 'rotate(180deg)' } : undefined}
     >
       <span className="max-w-[80%] truncate text-lg font-bold">{name}</span>
-      <span key={points} className="score-pulse text-[7rem] font-black leading-none tabular-nums">
-        {points}
-      </span>
+
+      <div className="relative inline-flex">
+        {active && (
+          <div key={tick} className="pointer-events-none absolute left-1/2 top-1/2 h-0 w-0">
+            <div
+              className="score-ripple absolute left-0 top-0 -m-[75px] h-[150px] w-[150px] rounded-full"
+              style={{ background: 'radial-gradient(circle, currentColor, transparent 70%)' }}
+            />
+            <div className="score-ring absolute left-0 top-0 -m-[60px] h-[120px] w-[120px] rounded-full border-2 border-current" />
+            {particles.map((p, i) => (
+              <span
+                key={i}
+                className="spark-dot bg-current"
+                style={{ '--dx': `${p.dx}px`, '--dy': `${p.dy}px` }}
+              />
+            ))}
+          </div>
+        )}
+        <span key={points} className="score-pulse relative text-[7rem] font-black leading-none tabular-nums">
+          {points}
+        </span>
+      </div>
+
       <SetDots won={setsWon} />
       <span className="text-xs text-gray-500">Toca para sumar punto</span>
     </button>
