@@ -39,6 +39,8 @@ export default function HeadToHeadTab({ roster, headToHeadStats }) {
       })
     : null
   const oriented = entry ? orientPair(entry, playerA) : null
+  const winRateA = oriented ? (oriented.matchesA / entry.totalMatches) * 100 : null
+  const winRateB = oriented ? (oriented.matchesB / entry.totalMatches) * 100 : null
 
   return (
     <div>
@@ -58,6 +60,7 @@ export default function HeadToHeadTab({ roster, headToHeadStats }) {
       {!sameSelection && oriented && (
         <div className="flex flex-col gap-3 rounded-xl bg-surface p-4 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)]">
           <Row label="Partidos ganados" a={oriented.matchesA} b={oriented.matchesB} />
+          <WinRateRow winRateA={winRateA} winRateB={winRateB} />
           <Row label="Sets ganados" a={oriented.setsA} b={oriented.setsB} />
           <div className="h-px bg-black/10" />
           <div>
@@ -99,6 +102,26 @@ function Row({ label, a, b }) {
       <span className="text-gray-500">{label}</span>
       <span className="font-extrabold tabular-nums text-gray-900">
         {a} - {b}
+      </span>
+    </div>
+  )
+}
+
+// Verde para quien lleva ventaja en el enfrentamiento, rojo para el otro;
+// si están empatados 50%/50% ambos se muestran en azul.
+function winRateColor(rate, otherRate) {
+  if (rate === otherRate) return 'text-blue-600'
+  return rate > otherRate ? 'text-green-600' : 'text-red-600'
+}
+
+function WinRateRow({ winRateA, winRateB }) {
+  return (
+    <div className="flex items-center justify-between text-sm">
+      <span className="text-gray-500">Winrate</span>
+      <span className="font-extrabold tabular-nums">
+        <span className={winRateColor(winRateA, winRateB)}>{Math.round(winRateA)}%</span>
+        <span className="text-gray-400"> - </span>
+        <span className={winRateColor(winRateB, winRateA)}>{Math.round(winRateB)}%</span>
       </span>
     </div>
   )
