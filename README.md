@@ -30,9 +30,9 @@ Marcador grande y táctil (tap para sumar punto), pensado para usarse con el cel
 
 ### Historial — Partidos
 
-Lista de partidos jugados, con filtro por jugador y por rango de fechas (combinables entre sí). Cada partido se puede abrir para ver el detalle set por set, editar los nombres o borrarlo.
+Lista de partidos jugados, con filtro por jugador y por rango de fechas (combinables entre sí), paginada de a 7 partidos con navegación numerada. Cada partido se puede abrir para ver el detalle set por set, editar los nombres o borrarlo.
 
-<img src="docs/screenshots/03-historial-partidos.png" alt="Pestaña Partidos del historial, con filtros por jugador y fecha" width="320" />
+<img src="docs/screenshots/03-historial-partidos.png" alt="Pestaña Partidos del historial, con filtros por jugador y fecha, y paginación numerada" width="320" />
 
 ### Historial — Jugador
 
@@ -42,9 +42,9 @@ Totales individuales de un jugador: partidos ganados, sets ganados y puntos anot
 
 ### Historial — Cara a cara
 
-Comparación directa entre dos jugadores: partidos ganados por cada uno, sets ganados por cada uno, y el total de puntos anotados por cada uno en todos los sets que han jugado entre sí.
+Comparación directa entre dos jugadores: partidos ganados por cada uno, winrate del enfrentamiento (en verde para quien lleva ventaja, rojo para el otro, y azul si están empatados 50%/50%), sets ganados por cada uno, y el total de puntos anotados por cada uno en todos los sets que han jugado entre sí.
 
-<img src="docs/screenshots/05-historial-cara-a-cara.png" alt="Pestaña Cara a cara del historial comparando dos jugadores" width="320" />
+<img src="docs/screenshots/05-historial-cara-a-cara.png" alt="Pestaña Cara a cara del historial comparando dos jugadores, con winrate coloreado" width="320" />
 
 ### Compartir resultado
 

@@ -54,10 +54,34 @@ async function main() {
   // 6) Resumen de partido terminado, con el botón "Compartir resultado"
   await shot(page, '06-resultado.png')
 
+  // Juega varios partidos más entre los mismos dos jugadores, con una
+  // ventaja clara para Jugador 1 (5 de 8 en total), para que el historial
+  // muestre paginación (más de 7 partidos) y la pestaña Cara a cara
+  // muestre un winrate con colores.
+  const moreResults = ['player2', 'player1', 'player2', 'player1', 'player2', 'player1', 'player1']
+  for (const winner of moreResults) {
+    await page.getByRole('button', { name: 'Nuevo partido' }).click()
+    await page.waitForTimeout(150)
+    await page.getByRole('button', { name: 'Iniciar partido' }).click()
+    await page.waitForTimeout(150)
+    const winnerLocator = winner === 'player1' ? p1 : p2
+    await tapTimes(winnerLocator, 11)
+    await page.waitForTimeout(300)
+    await tapTimes(winnerLocator, 11)
+    await page.waitForTimeout(500)
+  }
+  await page.getByRole('button', { name: 'Nuevo partido' }).click()
+  await page.waitForTimeout(150)
+
   await page.getByRole('button', { name: 'Historial' }).click()
   await page.waitForTimeout(700)
 
-  // 3) Historial > pestaña Partidos
+  // Baja el scroll de la lista para que se alcancen a ver los controles
+  // de paginación numerados, no solo los primeros partidos.
+  await page.evaluate(() => document.querySelector('.overflow-y-auto')?.scrollTo(0, 999))
+  await page.waitForTimeout(200)
+
+  // 3) Historial > pestaña Partidos (con paginación: más de 7 partidos)
   await shot(page, '03-historial-partidos.png')
 
   await page.getByRole('button', { name: 'Jugador', exact: true }).click()
@@ -69,7 +93,7 @@ async function main() {
   await page.getByRole('button', { name: 'Cara a cara' }).click()
   await page.waitForTimeout(500)
 
-  // 5) Historial > pestaña Cara a cara
+  // 5) Historial > pestaña Cara a cara (winrate con colores)
   await shot(page, '05-historial-cara-a-cara.png')
 
   await browser.close()
