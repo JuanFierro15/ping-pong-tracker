@@ -30,7 +30,6 @@ export function PaddleAndBallIcon({ className }) {
         <rect x="6" y="2" width="24" height="30" rx="11" />
         <rect x="15" y="31" width="8" height="13" rx="4" />
       </g>
-      <circle cx="38" cy="16" r="7" fill="var(--color-accent)" />
     </svg>
   )
 }
