@@ -272,6 +272,10 @@ select {
 
 .glow-pulse {
   animation: glow-pulse 2.2s ease-in-out infinite;
+  /* El blur se pinta fuera de la caja del elemento; sin promover una capa
+     propia, algunos WebView de Android no invalidan bien esa zona en cada
+     frame y dejan un "fantasma" del glow anterior mientras se anima. */
+  will-change: transform;
 }
 
 @keyframes row-in {
@@ -314,6 +318,10 @@ select {
 
 .ball-orbit {
   animation: ball-orbit 4.5s linear infinite;
+  /* Mismo caso: box-shadow (el glow) se pinta fuera de la caja del span
+     mientras gira por transform. Sin capa propia, el WebView del celular
+     deja una copia del glow anterior en vez de borrarla cada frame. */
+  will-change: transform;
 }
 
 @keyframes orb-drift-a {
@@ -338,8 +346,11 @@ select {
 
 .orb-drift-a {
   animation: orb-drift-a 7s ease-in-out infinite;
+  /* Mismo problema de fondo: blur-2xl pinta fuera de la caja del div. */
+  will-change: transform;
 }
 
 .orb-drift-b {
   animation: orb-drift-b 8.5s ease-in-out infinite;
+  will-change: transform;
 }
