@@ -9,6 +9,8 @@ import HeadToHeadTab from './HeadToHeadTab'
 import EmptyState from './EmptyState'
 import { DownloadIcon, UploadIcon, TrashIcon, TrophyIcon, ChevronDownIcon } from './icons'
 
+const MATCHES_PER_PAGE = 7
+
 const SUBTABS = [
   { id: 'matches', label: 'Partidos' },
   { id: 'player', label: 'Jugador' },
@@ -186,6 +188,14 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
   const [playerFilter, setPlayerFilter] = useState('')
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
+  const [page, setPage] = useState(1)
+
+  // Cambiar cualquier filtro vuelve a la página 1: la paginación se
+  // recalcula sobre el resultado filtrado, así que la página en la que
+  // estábamos ya no tiene por qué corresponder a los mismos partidos.
+  useEffect(() => {
+    setPage(1)
+  }, [playerFilter, fromDate, toDate])
 
   if (matches.length === 0) {
     return <EmptyState message="Aún no hay partidos jugados" />
@@ -201,6 +211,13 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
     if (toBound && matchDate > toBound) return false
     return true
   })
+
+  const totalPages = Math.max(1, Math.ceil(filteredMatches.length / MATCHES_PER_PAGE))
+  const currentPage = Math.min(page, totalPages)
+  const pageMatches = filteredMatches.slice(
+    (currentPage - 1) * MATCHES_PER_PAGE,
+    currentPage * MATCHES_PER_PAGE
+  )
 
   return (
     <div>
@@ -244,18 +261,41 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
       {filteredMatches.length === 0 ? (
         <EmptyState message="No hay partidos con este filtro" />
       ) : (
-        <div className="overflow-hidden rounded-xl bg-surface">
-          {filteredMatches.map((match, i) => (
-            <MatchListItem
-              key={match.id}
-              match={match}
-              isLast={i === filteredMatches.length - 1}
-              delay={Math.min(i * 45, 320)}
-              onOpen={() => onOpen(match)}
-              onDelete={() => onDelete(match)}
-            />
-          ))}
-        </div>
+        <>
+          <div className="overflow-hidden rounded-xl bg-surface">
+            {pageMatches.map((match, i) => (
+              <MatchListItem
+                key={match.id}
+                match={match}
+                isLast={i === pageMatches.length - 1}
+                delay={Math.min(i * 45, 320)}
+                onOpen={() => onOpen(match)}
+                onDelete={() => onDelete(match)}
+              />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setPage(n)}
+                  aria-label={`Página ${n}`}
+                  aria-current={n === currentPage ? 'page' : undefined}
+                  className={`h-8 min-w-8 rounded-lg px-2 text-sm font-bold transition ${
+                    n === currentPage
+                      ? 'bg-accent text-white shadow-md shadow-accent/30'
+                      : 'bg-surface-2 text-gray-500'
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   )
