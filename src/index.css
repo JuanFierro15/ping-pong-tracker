@@ -76,7 +76,11 @@ select {
 }
 
 .score-ripple {
-  animation: score-ripple 620ms ease-out;
+  /* forwards: sin esto, al terminar la animación el navegador vuelve a los
+     valores base (opacity:1, sin transform) en vez de quedarse en el
+     estado final (invisible) del keyframe, dejando un círculo opaco fijo
+     sobre el número. */
+  animation: score-ripple 620ms ease-out forwards;
 }
 
 @keyframes score-ring {
@@ -91,7 +95,7 @@ select {
 }
 
 .score-ring {
-  animation: score-ring 560ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: score-ring 560ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 @keyframes score-spark {
