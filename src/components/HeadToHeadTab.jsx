@@ -50,7 +50,7 @@ export default function HeadToHeadTab({ roster, headToHeadStats }) {
       </div>
 
       {sameSelection && (
-        <p className="mt-6 text-center text-sm text-gray-400">
+        <p className="mt-6 text-center text-sm text-gray-600">
           Elige dos jugadores distintos para comparar.
         </p>
       )}
@@ -64,7 +64,7 @@ export default function HeadToHeadTab({ roster, headToHeadStats }) {
           <Row label="Sets ganados" a={oriented.setsA} b={oriented.setsB} />
           <div className="h-px bg-black/10" />
           <div>
-            <div className="mb-1 text-[10.5px] font-bold uppercase tracking-wide text-gray-400">
+            <div className="mb-1 text-[10.5px] font-bold uppercase tracking-wide text-gray-600">
               Puntos anotados en total
             </div>
             <div className="text-sm font-bold tabular-nums text-gray-900">

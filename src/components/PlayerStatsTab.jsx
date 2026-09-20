@@ -62,7 +62,7 @@ function StatTile({ value, label, className = '', delay = 0 }) {
       style={{ animationDelay: `${delay}ms` }}
     >
       <span className="text-lg font-extrabold tabular-nums text-gray-900">{value}</span>
-      <span className="text-[10.5px] font-bold uppercase tracking-wide text-gray-400">{label}</span>
+      <span className="text-[10.5px] font-bold uppercase tracking-wide text-gray-600">{label}</span>
     </div>
   )
 }

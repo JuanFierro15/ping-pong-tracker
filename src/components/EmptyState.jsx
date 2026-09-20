@@ -5,8 +5,8 @@ import { BallIcon } from './icons'
 export default function EmptyState({ message, icon: Icon = BallIcon }) {
   return (
     <div className="mt-10 flex flex-col items-center gap-2 text-center">
-      <Icon className="h-8 w-8 text-gray-300" />
-      <p className="text-sm text-gray-400">{message}</p>
+      <Icon className="h-8 w-8 text-gray-400" />
+      <p className="text-sm text-gray-600">{message}</p>
     </div>
   )
 }
