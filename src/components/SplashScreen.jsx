@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from 'react'
 import raqueta from '../assets/raqueta.png'
 import pelota from '../assets/pelota.png'
 
-// Debe quedar despues de que termina .splash-ball en index.css (delay
-// 480ms + duracion 880ms = 1360ms), con un pequeno solape para que el
-// fundido final arranque justo cuando la pelota casi desaparece.
-const EXIT_START_MS = 1300
-const EXIT_FADE_MS = 280
+// Coincide con el arranque del propio fundido de .splash-ball en index.css
+// (empieza en el keyframe 88% de una animacion con delay 250ms + duracion
+// 1150ms => 250 + 0.88*1150 = 1262ms), para que el fundido del overlay se
+// superponga con el de la pelota en vez de dejar un salto entre ambos.
+const EXIT_START_MS = 1260
+const EXIT_FADE_MS = 300
 
 export default function SplashScreen({ onFinish }) {
   const [exiting, setExiting] = useState(false)

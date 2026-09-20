@@ -359,45 +359,65 @@ select {
   will-change: transform;
 }
 
-@keyframes splash-paddle-in {
+@keyframes splash-paddle-hit {
   0% {
-    transform: translate(-160%, 6%) rotate(-65deg);
+    transform: translate(-165%, 8%) rotate(-68deg);
     opacity: 0;
   }
-  55% {
-    transform: translate(-8%, 0%) rotate(-18deg);
+  50% {
+    transform: translate(-4%, -1%) rotate(-12deg);
     opacity: 1;
   }
-  72% {
-    transform: translate(4%, -3%) rotate(14deg);
+  68% {
+    /* punto de contacto: la raqueta se detiene aqui, no sigue a la pelota */
+    transform: translate(3%, -3%) rotate(10deg);
+    opacity: 1;
   }
   100% {
-    transform: translate(-6%, 0%) rotate(-6deg);
-    opacity: 1;
+    /* mismo transform que el 68%: solo se desvanece, no se mueve mas,
+       para que no parezca que "empuja" la pelota en su recorrido */
+    transform: translate(3%, -3%) rotate(10deg);
+    opacity: 0;
   }
 }
 
 .splash-paddle {
-  /* 550ms: debe terminar justo antes de que .splash-ball empiece a
-     acercarse (delay 480ms), simulando que la pelota sale del golpe. */
-  animation: splash-paddle-in 550ms cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
-  will-change: transform;
+  /* 380ms: swing corto y rapido. El contacto (68%) cae justo cuando
+     .splash-ball arranca (delay 250ms), y el resto es solo el fundido
+     de salida de la raqueta. */
+  animation: splash-paddle-hit 380ms cubic-bezier(0.32, 0.94, 0.36, 1) forwards;
+  will-change: transform, opacity;
 }
 
 @keyframes splash-ball-approach {
   0% {
-    transform: translate(-6%, 0%) scale(0.08);
+    /* sale del punto de golpe, apenas visible */
+    transform: translate(-6vw, 4vh) scale(0.05);
     opacity: 0;
+    animation-timing-function: ease-out;
   }
-  8% {
+  12% {
+    transform: translate(0vw, 0vh) scale(0.07);
     opacity: 1;
+    animation-timing-function: ease-in-out;
   }
-  80% {
-    transform: translate(0%, 0%) scale(6.5);
+  40% {
+    /* punto mas alto/lateral del arco: se aleja un poco de camara antes
+       de girar y venir de frente, en vez de una linea recta al centro */
+    transform: translate(14vw, -12vh) scale(0.15);
     opacity: 1;
+    /* ease-in agresivo: a partir de aqui la pelota acelera fuerte hacia
+       la camara en vez de crecer de forma pareja/lineal */
+    animation-timing-function: cubic-bezier(0.7, 0, 0.84, 0);
+  }
+  88% {
+    /* cubre toda la pantalla, sin bordes de fondo visibles alrededor */
+    transform: translate(0vw, 0vh) scale(16);
+    opacity: 1;
+    animation-timing-function: ease-out;
   }
   100% {
-    transform: translate(0%, 0%) scale(7.5);
+    transform: translate(0vw, 0vh) scale(16.4);
     opacity: 0;
   }
 }
@@ -407,7 +427,7 @@ select {
      con fill-mode "forwards" el navegador no aplica el 0% del keyframe,
      asi que sin esto se ve un parpadeo de la pelota en su tamano final. */
   opacity: 0;
-  animation: splash-ball-approach 880ms cubic-bezier(0.36, 0, 0.66, 1) forwards;
-  animation-delay: 480ms;
+  animation: splash-ball-approach 1150ms linear forwards;
+  animation-delay: 250ms;
   will-change: transform, opacity;
 }
