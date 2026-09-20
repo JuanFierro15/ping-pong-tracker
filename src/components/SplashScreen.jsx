@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import raqueta from '../assets/raqueta.png'
 import pelota from '../assets/pelota.png'
 
-// Duración total pensada para sentirse rápida: swing de la raqueta, golpe
-// que lanza la pelota hacia la cámara, y fundido final hacia la pantalla
-// principal. EXIT_FADE_MS es cuánto dura ese fundido final.
-const EXIT_START_MS = 1250
+// Debe quedar despues de que termina .splash-ball en index.css (delay
+// 480ms + duracion 880ms = 1360ms), con un pequeno solape para que el
+// fundido final arranque justo cuando la pelota casi desaparece.
+const EXIT_START_MS = 1300
 const EXIT_FADE_MS = 280
 
 export default function SplashScreen({ onFinish }) {
@@ -38,8 +38,8 @@ export default function SplashScreen({ onFinish }) {
       onClick={handleSkip}
       role="presentation"
     >
-      <img src={raqueta} alt="" className="absolute h-40 w-40 object-contain" />
-      <img src={pelota} alt="" className="absolute h-20 w-20 object-contain" />
+      <img src={raqueta} alt="" className="splash-paddle absolute h-40 w-40 object-contain" />
+      <img src={pelota} alt="" className="splash-ball absolute h-20 w-20 object-contain" />
     </div>
   )
 }
