@@ -2,11 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import raqueta from '../assets/raqueta.png'
 import pelota from '../assets/pelota.png'
 
-// Coincide con el arranque del propio fundido de .splash-ball en index.css
-// (empieza en el keyframe 88% de una animacion con delay 250ms + duracion
-// 1150ms => 250 + 0.88*1150 = 1262ms), para que el fundido del overlay se
-// superponga con el de la pelota en vez de dejar un salto entre ambos.
-const EXIT_START_MS = 1260
+// Debe coincidir con el FINAL del propio fundido de .splash-ball en
+// index.css (delay 250ms + duracion 1150ms = 1400ms), no con su arranque
+// (keyframe 88%, ~1262ms): si el overlay empieza a desvanecerse ahi, su
+// fondo se vuelve transparente al mismo tiempo que la pelota, dejando
+// traslucir la pantalla de Setup antes de que la pelota termine de tapar
+// la pantalla. Arranca 20ms antes del final solo para que el empalme no
+// se sienta como un corte seco.
+const EXIT_START_MS = 1380
 const EXIT_FADE_MS = 300
 
 export default function SplashScreen({ onFinish }) {

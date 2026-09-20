@@ -387,6 +387,9 @@ select {
      de salida de la raqueta. */
   animation: splash-paddle-hit 380ms cubic-bezier(0.32, 0.94, 0.36, 1) forwards;
   will-change: transform, opacity;
+  /* La cara de la raqueta es casi del mismo verde que el fondo del splash;
+     sin este halo se lee como una silueta apenas visible. */
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.22));
 }
 
 @keyframes splash-ball-approach {
