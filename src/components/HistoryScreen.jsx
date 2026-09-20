@@ -145,12 +145,12 @@ export default function HistoryScreen({ active }) {
             ))}
           </div>
 
-          <div className="flex-1 overflow-y-auto px-4 pb-4">
+          <div className="flex-1 overflow-y-auto px-4 pb-8">
             {statusMessage && (
               <div className="mb-3 rounded-lg bg-surface-2 px-3 py-2 text-sm text-gray-700">{statusMessage}</div>
             )}
 
-            {matches === null && <p className="mt-8 text-center text-gray-400">Cargando…</p>}
+            {matches === null && <p className="mt-8 text-center text-gray-600">Cargando…</p>}
 
             {matches !== null && subTab === 'matches' && (
               <MatchesTab
@@ -219,6 +219,14 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
     currentPage * MATCHES_PER_PAGE
   )
 
+  const hasActiveFilters = Boolean(playerFilter || fromDate || toDate)
+
+  function clearFilters() {
+    setPlayerFilter('')
+    setFromDate('')
+    setToDate('')
+  }
+
   return (
     <div>
       <div className="relative mb-2.5">
@@ -238,7 +246,7 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
       </div>
 
       <div className="mb-3 flex gap-2">
-        <label className="flex-1 text-xs text-gray-500">
+        <label className="flex-1 text-xs text-gray-600">
           Desde
           <input
             type="date"
@@ -247,7 +255,7 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
             className="mt-1 w-full rounded-xl bg-surface px-3 py-2 text-sm font-semibold text-gray-900 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)] outline-none"
           />
         </label>
-        <label className="flex-1 text-xs text-gray-500">
+        <label className="flex-1 text-xs text-gray-600">
           Hasta
           <input
             type="date"
@@ -257,6 +265,16 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
           />
         </label>
       </div>
+
+      {hasActiveFilters && (
+        <button
+          type="button"
+          onClick={clearFilters}
+          className="mb-3 text-xs font-bold text-accent active:opacity-60"
+        >
+          Limpiar filtros
+        </button>
+      )}
 
       {filteredMatches.length === 0 ? (
         <EmptyState message="No hay partidos con este filtro" />
@@ -316,7 +334,7 @@ function MatchListItem({ match, isLast, delay, onOpen, onDelete }) {
         className="flex-1 px-4 py-3 text-left active:bg-surface-2 transition"
       >
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-400">{formatDate(match.date)}</span>
+          <span className="text-xs text-gray-600">{formatDate(match.date)}</span>
           <span className="text-base font-bold tabular-nums text-gray-900">
             {setsWon.player1} - {setsWon.player2}
           </span>
