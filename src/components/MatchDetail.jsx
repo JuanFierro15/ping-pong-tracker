@@ -1,5 +1,10 @@
 import { useState } from 'react'
-import { countSetsWon } from '../utils/gameLogic'
+import {
+  countSetsWon,
+  MATCH_FORMATS,
+  DEFAULT_MATCH_FORMAT,
+  DEFAULT_POINTS_TO_WIN,
+} from '../utils/gameLogic'
 import { updateMatchPlayerNames } from '../db'
 import { shareMatchResult } from '../utils/shareMatch'
 import { ChevronLeftIcon, PencilIcon, ShareIcon, TrophyIcon } from './icons'
@@ -12,6 +17,11 @@ export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpd
 
   const setsWon = countSetsWon(match.sets)
   const winnerName = match.winner === 'player1' ? match.player1Name : match.player2Name
+  // Partidos guardados antes de esta funcionalidad no tienen estos campos:
+  // se asume bo3/11, que era el unico formato posible en ese momento.
+  const matchFormat = MATCH_FORMATS[match.matchFormat] ? match.matchFormat : DEFAULT_MATCH_FORMAT
+  const pointsToWin = match.pointsToWin ?? DEFAULT_POINTS_TO_WIN
+  const formatLabel = MATCH_FORMATS[matchFormat].label
 
   async function handleShare() {
     const result = await shareMatchResult(match)
@@ -67,6 +77,9 @@ export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpd
 
       <div className="flex-1 overflow-y-auto p-5">
         <p className="text-sm text-gray-500">{formatDate(match.date)}</p>
+        <p className="mt-0.5 text-xs font-semibold uppercase tracking-wide text-gray-600">
+          {formatLabel} · a {pointsToWin} puntos
+        </p>
 
         {editing ? (
           <div className="mt-2 space-y-2">

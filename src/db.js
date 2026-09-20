@@ -62,6 +62,10 @@ export async function importMatches(rawMatches) {
     player2Name: match.player2Name,
     sets: match.sets,
     winner: match.winner,
+    // Opcionales: partidos exportados antes de esta funcionalidad no los
+    // traen, y el resto de la app ya asume bo3/11 por defecto si faltan.
+    ...(typeof match.matchFormat === 'string' ? { matchFormat: match.matchFormat } : {}),
+    ...(typeof match.pointsToWin === 'number' ? { pointsToWin: match.pointsToWin } : {}),
   }))
 
   await db.matches.bulkPut(toInsert)

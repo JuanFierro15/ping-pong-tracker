@@ -1,25 +1,29 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { computeMatchState } from '../utils/gameLogic'
+import { computeMatchState, DEFAULT_MATCH_FORMAT, DEFAULT_POINTS_TO_WIN } from '../utils/gameLogic'
 import { saveMatch } from '../db'
 import { vibrateMatchWon, vibratePoint, vibrateSetWon } from '../utils/haptics'
 
 export function useLiveMatch() {
   const [player1Name, setPlayer1Name] = useState('Jugador 1')
   const [player2Name, setPlayer2Name] = useState('Jugador 2')
+  const [matchFormat, setMatchFormat] = useState(DEFAULT_MATCH_FORMAT)
+  const [pointsToWin, setPointsToWin] = useState(DEFAULT_POINTS_TO_WIN)
   const [events, setEvents] = useState([])
   const [saved, setSaved] = useState(false)
   const [started, setStarted] = useState(false)
 
+  const matchRules = useMemo(() => ({ matchFormat, pointsToWin }), [matchFormat, pointsToWin])
+
   const { sets, currentPoints, currentSetNumber, matchWinner } = useMemo(
-    () => computeMatchState(events),
-    [events]
+    () => computeMatchState(events, matchRules),
+    [events, matchRules]
   )
 
   const addPoint = useCallback(
     (player) => {
       if (matchWinner) return
       const newEvents = [...events, player]
-      const newState = computeMatchState(newEvents)
+      const newState = computeMatchState(newEvents, matchRules)
 
       if (newState.matchWinner) {
         vibrateMatchWon()
@@ -31,7 +35,7 @@ export function useLiveMatch() {
 
       setEvents(newEvents)
     },
-    [events, matchWinner, sets.length]
+    [events, matchWinner, sets.length, matchRules]
   )
 
   const undoLastPoint = useCallback(() => {
@@ -62,17 +66,23 @@ export function useLiveMatch() {
         player2Name,
         sets,
         winner: matchWinner,
+        matchFormat,
+        pointsToWin,
       }
       setSaved(true)
       saveMatch(match)
     }
-  }, [matchWinner, saved, sets, player1Name, player2Name])
+  }, [matchWinner, saved, sets, player1Name, player2Name, matchFormat, pointsToWin])
 
   return {
     player1Name,
     setPlayer1Name,
     player2Name,
     setPlayer2Name,
+    matchFormat,
+    setMatchFormat,
+    pointsToWin,
+    setPointsToWin,
     sets,
     currentPoints,
     currentSetNumber,

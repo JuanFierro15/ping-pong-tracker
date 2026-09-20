@@ -22,6 +22,7 @@ export default function ScoreBoard({
   player2Name,
   currentPoints,
   sets,
+  setsToWin,
   currentSetNumber,
   onScorePlayer1,
   onScorePlayer2,
@@ -59,6 +60,7 @@ export default function ScoreBoard({
         name={player2Name}
         points={currentPoints.player2}
         setsWon={setsWon.player2}
+        setsToWin={setsToWin}
         colorClass="bg-player2/10 text-player2"
         rotate
         active={tap.player === 'player2'}
@@ -102,6 +104,7 @@ export default function ScoreBoard({
         name={player1Name}
         points={currentPoints.player1}
         setsWon={setsWon.player1}
+        setsToWin={setsToWin}
         colorClass="bg-player1/10 text-player1"
         active={tap.player === 'player1'}
         tick={tap.tick}
@@ -121,7 +124,7 @@ export default function ScoreBoard({
   )
 }
 
-function PlayerHalf({ name, points, setsWon, colorClass, rotate, active, tick, onTap }) {
+function PlayerHalf({ name, points, setsWon, setsToWin, colorClass, rotate, active, tick, onTap }) {
   const particles = active ? burstParticles(tick) : []
 
   return (
@@ -155,16 +158,18 @@ function PlayerHalf({ name, points, setsWon, colorClass, rotate, active, tick, o
         </span>
       </div>
 
-      <SetDots won={setsWon} />
+      <SetDots won={setsWon} total={setsToWin} />
       <span className="text-xs text-gray-400">Toca para sumar punto</span>
     </button>
   )
 }
 
-function SetDots({ won }) {
+// La cantidad de puntos representa cuantos sets hacen falta para ganar el
+// partido segun el formato (bo1=1, bo3=2, bo5=3, bo7=4), no un 2 fijo.
+function SetDots({ won, total }) {
   return (
     <div className="flex gap-2">
-      {[0, 1].map((i) => (
+      {Array.from({ length: total }, (_, i) => (
         <span
           key={i}
           className={`h-3 w-3 rounded-full ${i < won ? 'bg-current' : 'bg-current/20'}`}

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useLiveMatch } from '../hooks/useLiveMatch'
+import { getSetsToWin } from '../utils/gameLogic'
 import MatchSetup from './MatchSetup'
 import ScoreBoard from './ScoreBoard'
 import MatchResult from './MatchResult'
@@ -11,6 +12,10 @@ export default function MatchScreen() {
     setPlayer1Name,
     player2Name,
     setPlayer2Name,
+    matchFormat,
+    setMatchFormat,
+    pointsToWin,
+    setPointsToWin,
     sets,
     currentPoints,
     currentSetNumber,
@@ -32,6 +37,10 @@ export default function MatchScreen() {
         player2Name={player2Name}
         onChangePlayer1Name={setPlayer1Name}
         onChangePlayer2Name={setPlayer2Name}
+        matchFormat={matchFormat}
+        onChangeMatchFormat={setMatchFormat}
+        pointsToWin={pointsToWin}
+        onChangePointsToWin={setPointsToWin}
         onStart={startMatch}
       />
     )
@@ -71,6 +80,7 @@ export default function MatchScreen() {
         player2Name={player2Name}
         currentPoints={currentPoints}
         sets={sets}
+        setsToWin={getSetsToWin(matchFormat)}
         currentSetNumber={currentSetNumber}
         onScorePlayer1={() => addPoint('player1')}
         onScorePlayer2={() => addPoint('player2')}
