@@ -394,20 +394,22 @@ select {
 
 @keyframes splash-ball-approach {
   0% {
-    /* sale del punto de golpe, apenas visible */
-    transform: translate(-6vw, 4vh) scale(0.05);
+    /* sale del punto de golpe ya como una pelota reconocible, no un punto
+       microscopico: si arranca casi invisible se ve como si apareciera
+       de la nada en vez de salir disparada del golpe. */
+    transform: translate(-6vw, 4vh) scale(0.3);
     opacity: 0;
     animation-timing-function: ease-out;
   }
   12% {
-    transform: translate(0vw, 0vh) scale(0.07);
+    transform: translate(0vw, 0vh) scale(0.38);
     opacity: 1;
     animation-timing-function: ease-in-out;
   }
   40% {
     /* punto mas alto/lateral del arco: se aleja un poco de camara antes
        de girar y venir de frente, en vez de una linea recta al centro */
-    transform: translate(14vw, -12vh) scale(0.15);
+    transform: translate(14vw, -12vh) scale(0.7);
     opacity: 1;
     /* ease-in agresivo: a partir de aqui la pelota acelera fuerte hacia
        la camara en vez de crecer de forma pareja/lineal */
