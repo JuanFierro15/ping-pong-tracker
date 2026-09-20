@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import MatchScreen from './components/MatchScreen'
 import HistoryScreen from './components/HistoryScreen'
+import SplashScreen from './components/SplashScreen'
 import { useInstallPrompt } from './hooks/useInstallPrompt'
 import { PaddleIcon, BallIcon, XIcon } from './components/icons'
 
@@ -13,9 +14,14 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('match')
   const { canInstall, promptInstall } = useInstallPrompt()
   const [installBannerDismissed, setInstallBannerDismissed] = useState(false)
+  // Solo se muestra al montar la app (apertura), no al cambiar de pestaña:
+  // las pestañas no remontan App, así que este estado no vuelve a activarse.
+  const [showSplash, setShowSplash] = useState(true)
 
   return (
     <div className="flex h-dvh flex-col bg-bg">
+      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
+
       {canInstall && !installBannerDismissed && (
         <div className="flex items-center justify-between gap-2 bg-accent-dark px-4 py-2 text-sm text-white">
           <span>Instala la app para usarla sin conexión</span>
