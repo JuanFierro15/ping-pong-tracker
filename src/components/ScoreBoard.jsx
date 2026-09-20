@@ -70,18 +70,18 @@ export default function ScoreBoard({
         <button
           type="button"
           onClick={onRequestCancel}
-          className="flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-gray-400 active:bg-surface-2"
+          className="flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-gray-300 active:bg-surface-2"
         >
           <XIcon className="h-3.5 w-3.5" />
           Cancelar
         </button>
 
         <div className="flex flex-col items-center">
-          <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+          <span className="text-xs font-semibold uppercase tracking-widest text-gray-300">
             Set {currentSetNumber}
           </span>
           {sets.length > 0 && (
-            <span className="mt-0.5 text-[11px] text-gray-500">
+            <span className="mt-0.5 text-[11px] text-gray-400">
               {sets.map((s) => `${s.player1Points}-${s.player2Points}`).join(' · ')}
             </span>
           )}
@@ -91,7 +91,7 @@ export default function ScoreBoard({
           type="button"
           onClick={onUndo}
           disabled={!canUndo}
-          className="flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-gray-400 disabled:opacity-30 active:bg-surface-2"
+          className="flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-gray-300 disabled:opacity-30 active:bg-surface-2"
         >
           <UndoIcon className="h-3.5 w-3.5" />
           Deshacer
@@ -111,7 +111,7 @@ export default function ScoreBoard({
       {setBanner && (
         <>
           <div className="set-wipe pointer-events-none absolute inset-y-0 left-0 z-20 w-3/5 bg-gradient-to-r from-transparent via-accent to-transparent" />
-          <div className="set-banner card absolute left-1/2 top-20 z-30 flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 shadow-lg">
+          <div className="set-banner absolute left-1/2 top-20 z-30 flex items-center gap-2 whitespace-nowrap rounded-xl border border-white/10 bg-surface-2 px-4 py-2.5 shadow-lg">
             <CheckIcon className="h-3.5 w-3.5 text-accent" />
             <span className="text-sm font-bold text-gray-100">{setBanner}</span>
           </div>
@@ -156,7 +156,7 @@ function PlayerHalf({ name, points, setsWon, colorClass, rotate, active, tick, o
       </div>
 
       <SetDots won={setsWon} />
-      <span className="text-xs text-gray-500">Toca para sumar punto</span>
+      <span className="text-xs text-gray-400">Toca para sumar punto</span>
     </button>
   )
 }
