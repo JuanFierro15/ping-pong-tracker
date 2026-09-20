@@ -39,6 +39,11 @@ export function useLiveMatch() {
   }, [])
 
   const startMatch = useCallback(() => {
+    // Mismo fallback que MatchDetail al editar nombres: sin esto, un
+    // campo vaciado guardaba '' y dejaba el marcador y el historial con
+    // nombres en blanco.
+    setPlayer1Name((prev) => prev.trim() || 'Jugador 1')
+    setPlayer2Name((prev) => prev.trim() || 'Jugador 2')
     setStarted(true)
   }, [])
 
