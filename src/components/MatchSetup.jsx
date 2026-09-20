@@ -1,12 +1,19 @@
-import { PaddleAndBallIcon, BallIcon } from './icons'
+import { MATCH_FORMATS, POINTS_OPTIONS } from '../utils/gameLogic'
+import { PaddleAndBallIcon, BallIcon, ChevronDownIcon } from './icons'
 
 export default function MatchSetup({
   player1Name,
   player2Name,
   onChangePlayer1Name,
   onChangePlayer2Name,
+  matchFormat,
+  onChangeMatchFormat,
+  pointsToWin,
+  onChangePointsToWin,
   onStart,
 }) {
+  const totalSets = MATCH_FORMATS[matchFormat].totalSets
+
   return (
     <div className="relative flex h-full flex-col items-center justify-center gap-8 overflow-hidden p-6">
       <div className="orb-drift-a absolute -left-16 -top-20 h-56 w-56 rounded-full bg-accent/10 blur-2xl" />
@@ -18,10 +25,16 @@ export default function MatchSetup({
           <span className="ball-orbit absolute right-0 top-1.5 h-[11px] w-[11px] rounded-full bg-accent shadow-[0_0_10px_rgba(249,115,22,0.8)]" />
         </div>
         <h1 className="text-2xl font-extrabold text-gray-100">Nuevo partido</h1>
-        <p className="text-sm text-gray-400">Al mejor de 3 sets, a 11 puntos</p>
+        <p className="text-sm text-gray-400">
+          Al mejor de {totalSets} {totalSets === 1 ? 'set' : 'sets'}, a {pointsToWin} puntos
+        </p>
       </div>
 
       <div className="w-full max-w-sm space-y-4">
+        <div className="flex gap-3">
+          <FormatField value={matchFormat} onChange={onChangeMatchFormat} />
+          <PointsField value={pointsToWin} onChange={onChangePointsToWin} />
+        </div>
         <PlayerNameField
           label="Jugador 1"
           color="text-player1"
@@ -45,6 +58,50 @@ export default function MatchSetup({
         Iniciar partido
       </button>
     </div>
+  )
+}
+
+function FormatField({ value, onChange }) {
+  return (
+    <label className="block flex-1">
+      <span className="mb-1 block text-sm font-semibold text-gray-300">Formato</span>
+      <div className="relative">
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full appearance-none rounded-xl bg-surface-2 px-4 py-3 text-base text-gray-100 outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-accent"
+        >
+          {Object.entries(MATCH_FORMATS).map(([key, format]) => (
+            <option key={key} value={key}>
+              {format.label}
+            </option>
+          ))}
+        </select>
+        <ChevronDownIcon className="pointer-events-none absolute right-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+      </div>
+    </label>
+  )
+}
+
+function PointsField({ value, onChange }) {
+  return (
+    <label className="block flex-1">
+      <span className="mb-1 block text-sm font-semibold text-gray-300">Puntos por set</span>
+      <div className="relative">
+        <select
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+          className="w-full appearance-none rounded-xl bg-surface-2 px-4 py-3 text-base text-gray-100 outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-accent"
+        >
+          {POINTS_OPTIONS.map((points) => (
+            <option key={points} value={points}>
+              {points}
+            </option>
+          ))}
+        </select>
+        <ChevronDownIcon className="pointer-events-none absolute right-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+      </div>
+    </label>
   )
 }
 
