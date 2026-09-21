@@ -16,6 +16,7 @@ export function useLiveMatch() {
   const [matchFormat, setMatchFormat] = useState(DEFAULT_MATCH_FORMAT)
   const [pointsToWin, setPointsToWin] = useState(DEFAULT_POINTS_TO_WIN)
   const [firstServer, setFirstServer] = useState(DEFAULT_FIRST_SERVER)
+  const [manualSwap, setManualSwap] = useState(false)
   const [events, setEvents] = useState([])
   const [saved, setSaved] = useState(false)
   const [started, setStarted] = useState(false)
@@ -33,11 +34,20 @@ export function useLiveMatch() {
     [currentPoints, firstServer, pointsToWin]
   )
 
-  // Igual de derivado que el saque: ver getAutoSidesSwapped.
-  const sidesSwapped = useMemo(
+  // Igual de derivado que el saque (ver getAutoSidesSwapped), combinado con
+  // el toggle manual: si el jugador lo activa, invierte lo que diria la
+  // regla automatica en vez de reemplazarla, asi el aviso automatico de
+  // "cambio de lado" sigue disparandose en el momento que corresponde
+  // aunque el usuario ya lo haya adelantado a mano.
+  const autoSwapped = useMemo(
     () => getAutoSidesSwapped(currentSetNumber, currentPoints, matchFormat, pointsToWin),
     [currentSetNumber, currentPoints, matchFormat, pointsToWin]
   )
+  const sidesSwapped = autoSwapped !== manualSwap
+
+  const toggleSides = useCallback(() => {
+    setManualSwap((prev) => !prev)
+  }, [])
 
   const addPoint = useCallback(
     (player) => {
@@ -75,6 +85,7 @@ export function useLiveMatch() {
     setEvents([])
     setSaved(false)
     setStarted(false)
+    setManualSwap(false)
   }, [])
 
   useEffect(() => {
@@ -110,6 +121,7 @@ export function useLiveMatch() {
     currentSetNumber,
     currentServer,
     sidesSwapped,
+    toggleSides,
     matchWinner,
     hasStarted: started,
     addPoint,

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { countSetsWon } from '../utils/gameLogic'
-import { BallIcon, CheckIcon, UndoIcon, XIcon } from './icons'
+import { BallIcon, CheckIcon, SwapIcon, UndoIcon, XIcon } from './icons'
 
 // Chispas que salen disparadas del número al anotar: ángulos repartidos en
 // círculo, con una pequeña variación por toque para que no se vean idénticas.
@@ -26,6 +26,7 @@ export default function ScoreBoard({
   currentSetNumber,
   currentServer,
   sidesSwapped,
+  onToggleSides,
   onScorePlayer1,
   onScorePlayer2,
   onUndo,
@@ -123,15 +124,26 @@ export default function ScoreBoard({
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={onUndo}
-          disabled={!canUndo}
-          className="flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-gray-300 disabled:opacity-30 active:bg-surface-2"
-        >
-          <UndoIcon className="h-3.5 w-3.5" />
-          Deshacer
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={onToggleSides}
+            aria-label="Cambiar lado"
+            className="rounded-lg p-2 text-gray-300 active:bg-surface-2"
+          >
+            <SwapIcon className="h-3.5 w-3.5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={onUndo}
+            disabled={!canUndo}
+            className="flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-gray-300 disabled:opacity-30 active:bg-surface-2"
+          >
+            <UndoIcon className="h-3.5 w-3.5" />
+            Deshacer
+          </button>
+        </div>
       </div>
 
       <PlayerHalf
