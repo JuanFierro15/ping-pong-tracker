@@ -23,6 +23,7 @@ export default function MatchScreen() {
     currentSetNumber,
     currentServer,
     sidesSwapped,
+    autoSwapped,
     toggleSides,
     matchWinner,
     hasStarted,
@@ -91,6 +92,7 @@ export default function MatchScreen() {
         currentSetNumber={currentSetNumber}
         currentServer={currentServer}
         sidesSwapped={sidesSwapped}
+        autoSwapped={autoSwapped}
         onToggleSides={toggleSides}
         onScorePlayer1={() => addPoint('player1')}
         onScorePlayer2={() => addPoint('player2')}

@@ -26,6 +26,7 @@ export default function ScoreBoard({
   currentSetNumber,
   currentServer,
   sidesSwapped,
+  autoSwapped,
   onToggleSides,
   onScorePlayer1,
   onScorePlayer2,
@@ -54,17 +55,20 @@ export default function ScoreBoard({
 
   // Aviso breve solo cuando el cambio de lado lo dispara la regla
   // automatica: si el usuario lo hace con el boton manual ya sabe por que.
+  // Por eso este efecto mira autoSwapped (la regla sola) y no sidesSwapped
+  // (que ya incluye el toggle manual) — si mirara sidesSwapped, tocar el
+  // boton manual tambien dispararia el aviso.
   const [sideToast, setSideToast] = useState(false)
-  const prevAutoSwapped = useRef(sidesSwapped)
+  const prevAutoSwapped = useRef(autoSwapped)
 
   useEffect(() => {
-    if (sidesSwapped !== prevAutoSwapped.current) {
-      prevAutoSwapped.current = sidesSwapped
+    if (autoSwapped !== prevAutoSwapped.current) {
+      prevAutoSwapped.current = autoSwapped
       setSideToast(true)
       const timer = setTimeout(() => setSideToast(false), 2200)
       return () => clearTimeout(timer)
     }
-  }, [sidesSwapped])
+  }, [autoSwapped])
 
   function handleTap(player, score) {
     setTap((prev) => ({ player, tick: prev.tick + 1 }))

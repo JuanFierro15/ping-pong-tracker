@@ -121,6 +121,7 @@ export function useLiveMatch() {
     currentSetNumber,
     currentServer,
     sidesSwapped,
+    autoSwapped,
     toggleSides,
     matchWinner,
     hasStarted: started,
