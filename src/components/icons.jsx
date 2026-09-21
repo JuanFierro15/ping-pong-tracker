@@ -13,15 +13,20 @@ export function PaddleIcon({ className }) {
   )
 }
 
-export function BallIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className={className}>
-      <circle cx="12" cy="12" r="8" />
-      <path d="M9 6c2 3 2 9 0 12" />
-      <path d="M15 6c-2 3-2 9 0 12" />
-    </svg>
-  )
-}
+export const PingPongBallIcon = ({ className = "w-6 h-6", ...props }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M7.5 8a5.5 5.5 0 0 1 7-2" strokeWidth="1.5" strokeOpacity="0.5" />
+  </svg>
+)
+
+export const HistoryIcon = ({ className = "w-6 h-6", ...props }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+    <path d="M3 3v5h5" />
+    <path d="M12 7v5l4 2" />
+  </svg>
+)
 
 export function PaddleAndBallIcon({ className }) {
   return (
@@ -117,14 +122,12 @@ export function XIcon({ className }) {
   )
 }
 
-export function UndoIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M3 7v6h6" />
-      <path d="M3 13a9 9 0 1 0 3-6.7L3 9" />
-    </svg>
-  )
-}
+export const UndoIcon = ({ className = "w-6 h-6", ...props }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+    <path d="M3 7v6h6" />
+    <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
+  </svg>
+)
 
 export function CheckIcon({ className }) {
   return (

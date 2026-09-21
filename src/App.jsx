@@ -3,11 +3,11 @@ import MatchScreen from './components/MatchScreen'
 import HistoryScreen from './components/HistoryScreen'
 import SplashScreen from './components/SplashScreen'
 import { useInstallPrompt } from './hooks/useInstallPrompt'
-import { PaddleIcon, BallIcon, XIcon } from './components/icons'
+import { PaddleIcon, HistoryIcon, XIcon } from './components/icons'
 
 const TABS = [
   { id: 'match', label: 'Partido', Icon: PaddleIcon },
-  { id: 'history', label: 'Historial', Icon: BallIcon },
+  { id: 'history', label: 'Historial', Icon: HistoryIcon },
 ]
 
 export default function App() {

@@ -1,5 +1,5 @@
 import { MATCH_FORMATS, POINTS_OPTIONS } from '../utils/gameLogic'
-import { PaddleAndBallIcon, BallIcon, ChevronDownIcon } from './icons'
+import { PaddleAndBallIcon, PingPongBallIcon, ChevronDownIcon } from './icons'
 
 export default function MatchSetup({
   player1Name,
@@ -68,7 +68,7 @@ export default function MatchSetup({
           onClick={onStart}
           className="flex w-full max-w-sm items-center justify-center gap-2 rounded-2xl bg-accent py-5 text-xl font-bold text-white shadow-lg shadow-accent/30 active:scale-95 transition"
         >
-          <BallIcon className="h-5 w-5" />
+          <PingPongBallIcon className="h-5 w-5" />
           Iniciar partido
         </button>
       </div>
@@ -149,7 +149,7 @@ function ServerButton({ label, active, onClick }) {
         active ? 'bg-accent text-white' : 'bg-surface-2 text-gray-300 ring-1 ring-white/10'
       }`}
     >
-      {active && <BallIcon className="h-3.5 w-3.5 shrink-0" />}
+      {active && <PingPongBallIcon className="h-3.5 w-3.5 shrink-0" />}
       <span className="truncate">{label}</span>
     </button>
   )

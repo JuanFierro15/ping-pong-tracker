@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { countSetsWon } from '../utils/gameLogic'
 import { formatDuration } from '../utils/time'
-import { BallIcon, CheckIcon, ClockIcon, SwapIcon, UndoIcon, XIcon } from './icons'
+import { PingPongBallIcon, CheckIcon, ClockIcon, SwapIcon, UndoIcon, XIcon } from './icons'
 
 // Chispas que salen disparadas del número al anotar: ángulos repartidos en
 // círculo, con una pequeña variación por toque para que no se vean idénticas.
@@ -248,7 +248,7 @@ function PlayerHalf({
         className="flex flex-1 flex-col items-center justify-center gap-3 active:brightness-125 transition"
       >
         <span className="flex max-w-[80%] items-center gap-1.5">
-          {serving && <BallIcon className="h-4 w-4 shrink-0" />}
+          {serving && <PingPongBallIcon className="h-4 w-4 shrink-0" />}
           <span className="truncate text-lg font-bold">{name}</span>
         </span>
 
