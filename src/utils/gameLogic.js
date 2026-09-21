@@ -39,6 +39,34 @@ export function getMatchWinner(sets, matchFormat = DEFAULT_MATCH_FORMAT) {
   return null
 }
 
+export const DEFAULT_FIRST_SERVER = 'player1'
+
+// El saque se deriva siempre del puntaje actual del set, nunca se guarda
+// como estado aparte (asi no hay forma de que se desincronice de los
+// puntos reales, ni siquiera al usar "deshacer").
+//
+// Regla oficial: cada jugador saca 2 puntos seguidos, alternando, hasta
+// que el marcador empata en (pointsToWin - 1) puntos cada uno (ej. 10-10
+// a 11); de ahi en adelante el saque alterna de a 1 punto. Una vez que el
+// marcador esta empatado en ese umbral, la diferencia nunca puede volver
+// a superar 1 hasta que el set termine, asi que "ambos llegaron al menos
+// al umbral" equivale exactamente a "hubo un empate en el umbral".
+export function getCurrentServer(currentPoints, firstServer = DEFAULT_FIRST_SERVER, pointsToWin = DEFAULT_POINTS_TO_WIN) {
+  const deuceThreshold = pointsToWin - 1
+  const totalPoints = currentPoints.player1 + currentPoints.player2
+  const otherPlayer = firstServer === 'player1' ? 'player2' : 'player1'
+  const inDeuce = Math.min(currentPoints.player1, currentPoints.player2) >= deuceThreshold
+
+  // "Turno" de saque: antes del empate, cada turno dura 2 puntos: turno =
+  // floor(totalPoints/2). En el empate, totalPoints = 2*deuceThreshold y
+  // floor(totalPoints/2) = deuceThreshold, asi que totalPoints-deuceThreshold
+  // continua la misma numeracion de turnos sin saltos ni repeticiones al
+  // pasar a alternar de a 1 punto.
+  const turn = inDeuce ? totalPoints - deuceThreshold : Math.floor(totalPoints / 2)
+
+  return turn % 2 === 0 ? firstServer : otherPlayer
+}
+
 export function countSetsWon(sets) {
   return sets.reduce(
     (acc, set) => {
