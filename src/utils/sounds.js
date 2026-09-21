@@ -16,6 +16,13 @@ function getAudioContext() {
   if (!sharedContext || sharedContext.state === 'closed') {
     sharedContext = new AudioContextClass()
   }
+  // El sistema operativo suele suspender el hilo de audio tras un rato
+  // sin interaccion tactil (los 60s del time-out sin que nadie toque la
+  // pantalla son un caso tipico): sin este resume(), el beep de fin
+  // quedaria mudo en silencio en vez de sonar.
+  if (sharedContext.state === 'suspended') {
+    sharedContext.resume().catch(() => {})
+  }
   return sharedContext
 }
 
