@@ -436,3 +436,19 @@ select {
   animation-delay: 250ms;
   will-change: transform, opacity;
 }
+
+@keyframes side-swap-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.side-swap-in {
+  /* Solo opacity: la mitad de arriba ya tiene su propio rotate(180deg) en
+     el atributo style; animar transform aca lo pisaria durante los 320ms
+     de la animacion y se veria sin girar un instante. */
+  animation: side-swap-in 320ms ease-out;
+}

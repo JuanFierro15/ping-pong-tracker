@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   computeMatchState,
   getCurrentServer,
+  getAutoSidesSwapped,
   DEFAULT_MATCH_FORMAT,
   DEFAULT_POINTS_TO_WIN,
   DEFAULT_FIRST_SERVER,
@@ -30,6 +31,12 @@ export function useLiveMatch() {
   const currentServer = useMemo(
     () => getCurrentServer(currentPoints, firstServer, pointsToWin),
     [currentPoints, firstServer, pointsToWin]
+  )
+
+  // Igual de derivado que el saque: ver getAutoSidesSwapped.
+  const sidesSwapped = useMemo(
+    () => getAutoSidesSwapped(currentSetNumber, currentPoints, matchFormat, pointsToWin),
+    [currentSetNumber, currentPoints, matchFormat, pointsToWin]
   )
 
   const addPoint = useCallback(
@@ -102,6 +109,7 @@ export function useLiveMatch() {
     currentPoints,
     currentSetNumber,
     currentServer,
+    sidesSwapped,
     matchWinner,
     hasStarted: started,
     addPoint,

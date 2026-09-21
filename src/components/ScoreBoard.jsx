@@ -25,6 +25,7 @@ export default function ScoreBoard({
   setsToWin,
   currentSetNumber,
   currentServer,
+  sidesSwapped,
   onScorePlayer1,
   onScorePlayer2,
   onUndo,
@@ -50,24 +51,55 @@ export default function ScoreBoard({
     prevSetsLength.current = sets.length
   }, [sets, player1Name, player2Name])
 
+  // Aviso breve solo cuando el cambio de lado lo dispara la regla
+  // automatica: si el usuario lo hace con el boton manual ya sabe por que.
+  const [sideToast, setSideToast] = useState(false)
+  const prevAutoSwapped = useRef(sidesSwapped)
+
+  useEffect(() => {
+    if (sidesSwapped !== prevAutoSwapped.current) {
+      prevAutoSwapped.current = sidesSwapped
+      setSideToast(true)
+      const timer = setTimeout(() => setSideToast(false), 2200)
+      return () => clearTimeout(timer)
+    }
+  }, [sidesSwapped])
+
   function handleTap(player, score) {
     setTap((prev) => ({ player, tick: prev.tick + 1 }))
     score()
   }
 
+  const topPlayer = sidesSwapped ? 'player1' : 'player2'
+  const bottomPlayer = sidesSwapped ? 'player2' : 'player1'
+  const playerProps = {
+    player1: {
+      name: player1Name,
+      points: currentPoints.player1,
+      setsWon: setsWon.player1,
+      serving: currentServer === 'player1',
+      colorClass: 'bg-player1/10 text-player1',
+      onTap: () => handleTap('player1', onScorePlayer1),
+    },
+    player2: {
+      name: player2Name,
+      points: currentPoints.player2,
+      setsWon: setsWon.player2,
+      serving: currentServer === 'player2',
+      colorClass: 'bg-player2/10 text-player2',
+      onTap: () => handleTap('player2', onScorePlayer2),
+    },
+  }
+
   return (
     <div className="relative flex h-full flex-col">
       <PlayerHalf
-        name={player2Name}
-        points={currentPoints.player2}
-        setsWon={setsWon.player2}
+        key={topPlayer}
+        {...playerProps[topPlayer]}
         setsToWin={setsToWin}
-        serving={currentServer === 'player2'}
-        colorClass="bg-player2/10 text-player2"
         rotate
-        active={tap.player === 'player2'}
+        active={tap.player === topPlayer}
         tick={tap.tick}
-        onTap={() => handleTap('player2', onScorePlayer2)}
       />
 
       <div className="relative z-10 flex items-center justify-between gap-2 bg-surface px-3 py-2">
@@ -103,15 +135,11 @@ export default function ScoreBoard({
       </div>
 
       <PlayerHalf
-        name={player1Name}
-        points={currentPoints.player1}
-        setsWon={setsWon.player1}
+        key={bottomPlayer}
+        {...playerProps[bottomPlayer]}
         setsToWin={setsToWin}
-        serving={currentServer === 'player1'}
-        colorClass="bg-player1/10 text-player1"
-        active={tap.player === 'player1'}
+        active={tap.player === bottomPlayer}
         tick={tap.tick}
-        onTap={() => handleTap('player1', onScorePlayer1)}
       />
 
       {setBanner && (
@@ -122,6 +150,12 @@ export default function ScoreBoard({
             <span className="text-sm font-bold text-gray-100">{setBanner}</span>
           </div>
         </>
+      )}
+
+      {sideToast && (
+        <div className="pointer-events-none absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/10 bg-surface-2 px-4 py-2.5 shadow-lg">
+          <span className="text-sm font-bold text-gray-100">Cambio de lado</span>
+        </div>
       )}
     </div>
   )
@@ -134,7 +168,7 @@ function PlayerHalf({ name, points, setsWon, setsToWin, serving, colorClass, rot
     <button
       type="button"
       onClick={onTap}
-      className={`flex flex-1 flex-col items-center justify-center gap-3 ${colorClass} active:brightness-125 transition`}
+      className={`side-swap-in flex flex-1 flex-col items-center justify-center gap-3 ${colorClass} active:brightness-125 transition`}
       style={rotate ? { transform: 'rotate(180deg)' } : undefined}
     >
       <span className="flex max-w-[80%] items-center gap-1.5">
