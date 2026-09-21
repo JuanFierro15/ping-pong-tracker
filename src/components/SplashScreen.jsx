@@ -43,7 +43,12 @@ export default function SplashScreen({ onFinish }) {
       role="presentation"
     >
       <img src={raqueta} alt="" className="splash-paddle absolute h-40 w-40 object-contain" />
-      <img src={pelota} alt="" className="splash-ball absolute h-20 w-20 object-contain" />
+      {/* El eje horizontal (contenedor) y el vertical/escala (pelota) se
+          animan por separado para lograr una trayectoria parabolica real
+          en vez de una linea recta. */}
+      <div className="splash-ball-track absolute h-20 w-20">
+        <img src={pelota} alt="" className="splash-ball h-full w-full object-contain" />
+      </div>
     </div>
   )
 }
