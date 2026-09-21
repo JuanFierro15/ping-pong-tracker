@@ -9,6 +9,7 @@ import {
 } from '../utils/gameLogic'
 import { saveMatch } from '../db'
 import { vibrateMatchWon, vibratePoint, vibrateSetWon } from '../utils/haptics'
+import { playTimeoutEnd, playTimeoutStart } from '../utils/sounds'
 
 export function useLiveMatch() {
   const [player1Name, setPlayer1Name] = useState('Jugador 1')
@@ -91,6 +92,7 @@ export function useLiveMatch() {
       setTimeoutPlayer(player)
       setTimeoutStartedAt(Date.now())
       setTimeoutsUsed((prev) => ({ ...prev, [player]: true }))
+      playTimeoutStart()
     },
     [timeoutStartedAt, timeoutsUsed, matchWinner]
   )
@@ -105,6 +107,7 @@ export function useLiveMatch() {
       setPausedSetMs((prev) => prev + pausedFor)
       setTimeoutStartedAt(null)
       setTimeoutPlayer(null)
+      playTimeoutEnd()
     }, 60000)
     return () => clearTimeout(timer)
   }, [timeoutStartedAt])
