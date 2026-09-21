@@ -27,6 +27,10 @@ export default function MatchScreen() {
     toggleSides,
     matchElapsedMs,
     setElapsedMs,
+    timeoutsUsed,
+    timeoutPlayer,
+    timeoutRemainingSeconds,
+    startTimeout,
     matchWinner,
     hasStarted,
     addPoint,
@@ -98,6 +102,10 @@ export default function MatchScreen() {
         onToggleSides={toggleSides}
         matchElapsedMs={matchElapsedMs}
         setElapsedMs={setElapsedMs}
+        timeoutsUsed={timeoutsUsed}
+        timeoutPlayer={timeoutPlayer}
+        timeoutRemainingSeconds={timeoutRemainingSeconds}
+        onStartTimeout={startTimeout}
         onScorePlayer1={() => addPoint('player1')}
         onScorePlayer2={() => addPoint('player2')}
         onUndo={handleUndoRequest}

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { countSetsWon } from '../utils/gameLogic'
 import { formatDuration } from '../utils/time'
-import { BallIcon, CheckIcon, SwapIcon, UndoIcon, XIcon } from './icons'
+import { BallIcon, CheckIcon, ClockIcon, SwapIcon, UndoIcon, XIcon } from './icons'
 
 // Chispas que salen disparadas del número al anotar: ángulos repartidos en
 // círculo, con una pequeña variación por toque para que no se vean idénticas.
@@ -31,6 +31,10 @@ export default function ScoreBoard({
   onToggleSides,
   matchElapsedMs,
   setElapsedMs,
+  timeoutsUsed,
+  timeoutPlayer,
+  timeoutRemainingSeconds,
+  onStartTimeout,
   onScorePlayer1,
   onScorePlayer2,
   onUndo,
@@ -74,6 +78,10 @@ export default function ScoreBoard({
   }, [autoSwapped])
 
   function handleTap(player, score) {
+    // Ademas de que addPoint ya ignora el punto durante un time-out, esto
+    // evita que se dispare la animacion de "tap" sobre un punto que no se
+    // va a anotar.
+    if (timeoutPlayer) return
     setTap((prev) => ({ player, tick: prev.tick + 1 }))
     score()
   }
@@ -88,6 +96,8 @@ export default function ScoreBoard({
       serving: currentServer === 'player1',
       colorClass: 'bg-player1/10 text-player1',
       onTap: () => handleTap('player1', onScorePlayer1),
+      timeoutUsed: timeoutsUsed.player1,
+      onTimeout: () => onStartTimeout('player1'),
     },
     player2: {
       name: player2Name,
@@ -96,6 +106,8 @@ export default function ScoreBoard({
       serving: currentServer === 'player2',
       colorClass: 'bg-player2/10 text-player2',
       onTap: () => handleTap('player2', onScorePlayer2),
+      timeoutUsed: timeoutsUsed.player2,
+      onTimeout: () => onStartTimeout('player2'),
     },
   }
 
@@ -108,6 +120,7 @@ export default function ScoreBoard({
         rotate
         active={tap.player === topPlayer}
         tick={tap.tick}
+        timeoutActive={Boolean(timeoutPlayer)}
       />
 
       <div className="relative z-10 flex items-center justify-between gap-2 bg-surface px-3 py-2">
@@ -164,6 +177,7 @@ export default function ScoreBoard({
         setsToWin={setsToWin}
         active={tap.player === bottomPlayer}
         tick={tap.tick}
+        timeoutActive={Boolean(timeoutPlayer)}
       />
 
       {setBanner && (
@@ -181,50 +195,92 @@ export default function ScoreBoard({
           <span className="text-sm font-bold text-gray-100">Cambio de lado</span>
         </div>
       )}
+
+      {timeoutPlayer && (
+        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-2 bg-bg/95">
+          <ClockIcon className="h-8 w-8 text-accent" />
+          <span className="text-sm font-bold uppercase tracking-widest text-accent">Time-out</span>
+          <span className="text-lg font-semibold text-gray-100">
+            {timeoutPlayer === 'player1' ? player1Name : player2Name}
+          </span>
+          <span className="text-6xl font-black tabular-nums text-gray-100">{timeoutRemainingSeconds}</span>
+        </div>
+      )}
     </div>
   )
 }
 
-function PlayerHalf({ name, points, setsWon, setsToWin, serving, colorClass, rotate, active, tick, onTap }) {
+function PlayerHalf({
+  name,
+  points,
+  setsWon,
+  setsToWin,
+  serving,
+  colorClass,
+  rotate,
+  active,
+  tick,
+  onTap,
+  timeoutUsed,
+  timeoutActive,
+  onTimeout,
+}) {
   const particles = active ? burstParticles(tick) : []
 
   return (
-    <button
-      type="button"
-      onClick={onTap}
-      className={`side-swap-in flex flex-1 flex-col items-center justify-center gap-3 ${colorClass} active:brightness-125 transition`}
+    <div
+      className={`side-swap-in relative flex flex-1 flex-col ${colorClass}`}
       style={rotate ? { transform: 'rotate(180deg)' } : undefined}
     >
-      <span className="flex max-w-[80%] items-center gap-1.5">
-        {serving && <BallIcon className="h-4 w-4 shrink-0" />}
-        <span className="truncate text-lg font-bold">{name}</span>
-      </span>
-
-      <div className="relative inline-flex">
-        {active && (
-          <div key={tick} className="pointer-events-none absolute left-1/2 top-1/2 h-0 w-0">
-            <div
-              className="score-ripple absolute left-0 top-0 -m-[75px] h-[150px] w-[150px] rounded-full"
-              style={{ background: 'radial-gradient(circle, currentColor, transparent 70%)' }}
-            />
-            <div className="score-ring absolute left-0 top-0 -m-[60px] h-[120px] w-[120px] rounded-full border-2 border-current" />
-            {particles.map((p, i) => (
-              <span
-                key={i}
-                className="spark-dot bg-current"
-                style={{ '--dx': `${p.dx}px`, '--dy': `${p.dy}px` }}
-              />
-            ))}
-          </div>
-        )}
-        <span key={points} className="score-pulse relative text-[7rem] font-black leading-none tabular-nums">
-          {points}
+      <button
+        type="button"
+        onClick={onTap}
+        className="flex flex-1 flex-col items-center justify-center gap-3 active:brightness-125 transition"
+      >
+        <span className="flex max-w-[80%] items-center gap-1.5">
+          {serving && <BallIcon className="h-4 w-4 shrink-0" />}
+          <span className="truncate text-lg font-bold">{name}</span>
         </span>
-      </div>
 
-      <SetDots won={setsWon} total={setsToWin} />
-      <span className="text-xs text-gray-400">Toca para sumar punto</span>
-    </button>
+        <div className="relative inline-flex">
+          {active && (
+            <div key={tick} className="pointer-events-none absolute left-1/2 top-1/2 h-0 w-0">
+              <div
+                className="score-ripple absolute left-0 top-0 -m-[75px] h-[150px] w-[150px] rounded-full"
+                style={{ background: 'radial-gradient(circle, currentColor, transparent 70%)' }}
+              />
+              <div className="score-ring absolute left-0 top-0 -m-[60px] h-[120px] w-[120px] rounded-full border-2 border-current" />
+              {particles.map((p, i) => (
+                <span
+                  key={i}
+                  className="spark-dot bg-current"
+                  style={{ '--dx': `${p.dx}px`, '--dy': `${p.dy}px` }}
+                />
+              ))}
+            </div>
+          )}
+          <span key={points} className="score-pulse relative text-[7rem] font-black leading-none tabular-nums">
+            {points}
+          </span>
+        </div>
+
+        <SetDots won={setsWon} total={setsToWin} />
+        <span className="text-xs text-gray-400">Toca para sumar punto</span>
+      </button>
+
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation()
+          onTimeout()
+        }}
+        disabled={timeoutUsed || timeoutActive}
+        className="absolute bottom-3 right-3 flex items-center gap-1 rounded-lg bg-black/15 px-2.5 py-1.5 text-[11px] font-bold disabled:opacity-30 active:bg-black/25"
+      >
+        <ClockIcon className="h-3 w-3" />
+        Time-out
+      </button>
+    </div>
   )
 }
 
