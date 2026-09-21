@@ -31,6 +31,7 @@ export default function MatchScreen() {
     timeoutPlayer,
     timeoutRemainingSeconds,
     startTimeout,
+    endTimeout,
     matchWinner,
     hasStarted,
     addPoint,
@@ -106,6 +107,7 @@ export default function MatchScreen() {
         timeoutPlayer={timeoutPlayer}
         timeoutRemainingSeconds={timeoutRemainingSeconds}
         onStartTimeout={startTimeout}
+        onEndTimeout={endTimeout}
         onScorePlayer1={() => addPoint('player1')}
         onScorePlayer2={() => addPoint('player2')}
         onUndo={handleUndoRequest}

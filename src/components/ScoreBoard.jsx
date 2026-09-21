@@ -35,6 +35,7 @@ export default function ScoreBoard({
   timeoutPlayer,
   timeoutRemainingSeconds,
   onStartTimeout,
+  onEndTimeout,
   onScorePlayer1,
   onScorePlayer2,
   onUndo,
@@ -191,7 +192,9 @@ export default function ScoreBoard({
       )}
 
       {sideToast && (
-        <div className="pointer-events-none absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/10 bg-surface-2 px-4 py-2.5 shadow-lg">
+        // bottom-20 (no top-1/2): centrado tapaba la barra del cronometro,
+        // que vive justo en el medio de la pantalla entre las dos mitades.
+        <div className="pointer-events-none absolute bottom-20 left-1/2 z-30 -translate-x-1/2 rounded-xl border border-white/10 bg-surface-2 px-4 py-2.5 shadow-lg">
           <span className="text-sm font-bold text-gray-100">Cambio de lado</span>
         </div>
       )}
@@ -204,6 +207,13 @@ export default function ScoreBoard({
             {timeoutPlayer === 'player1' ? player1Name : player2Name}
           </span>
           <span className="text-6xl font-black tabular-nums text-gray-100">{timeoutRemainingSeconds}</span>
+          <button
+            type="button"
+            onClick={onEndTimeout}
+            className="mt-4 rounded-xl bg-accent px-8 py-3 text-base font-bold text-white active:scale-95 transition"
+          >
+            Reanudar
+          </button>
         </div>
       )}
     </div>

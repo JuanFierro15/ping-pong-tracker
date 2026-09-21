@@ -41,6 +41,17 @@ export function getMatchWinner(sets, matchFormat = DEFAULT_MATCH_FORMAT) {
 
 export const DEFAULT_FIRST_SERVER = 'player1'
 
+// Regla ITTF 2.13.6: quien saco primero en un set recibe primero en el
+// siguiente (osea, el saque inicial se alterna set a set): si Jugador1
+// saco primero en el Set 1, en el Set 2 empieza sacando Jugador2, en el
+// Set 3 vuelve a Jugador1, etc. matchFirstServer es el elegido en Setup
+// para el Set 1 (o el set 1 de cualquier formato); los sets impares lo
+// usan tal cual y los pares usan al otro jugador.
+export function getSetFirstServer(matchFirstServer = DEFAULT_FIRST_SERVER, setNumber = 1) {
+  const otherPlayer = matchFirstServer === 'player1' ? 'player2' : 'player1'
+  return setNumber % 2 === 1 ? matchFirstServer : otherPlayer
+}
+
 // El saque se deriva siempre del puntaje actual del set, nunca se guarda
 // como estado aparte (asi no hay forma de que se desincronice de los
 // puntos reales, ni siquiera al usar "deshacer").

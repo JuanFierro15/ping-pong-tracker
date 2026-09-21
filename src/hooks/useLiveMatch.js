@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   computeMatchState,
   getCurrentServer,
   getAutoSidesSwapped,
+  getSetFirstServer,
   DEFAULT_MATCH_FORMAT,
   DEFAULT_POINTS_TO_WIN,
   DEFAULT_FIRST_SERVER,
@@ -39,6 +40,7 @@ export function useLiveMatch() {
   const [timeoutStartedAt, setTimeoutStartedAt] = useState(null)
   const [pausedMs, setPausedMs] = useState(0)
   const [pausedSetMs, setPausedSetMs] = useState(0)
+  const timeoutTimerRef = useRef(null)
 
   const matchRules = useMemo(() => ({ matchFormat, pointsToWin }), [matchFormat, pointsToWin])
 
@@ -48,9 +50,12 @@ export function useLiveMatch() {
   )
 
   // Derivado del marcador actual, nunca guardado aparte: ver getCurrentServer.
+  // firstServer (elegido en Setup) es quien saca en el set 1; el que saca
+  // primero en CADA set se alterna segun getSetFirstServer (regla ITTF
+  // 2.13.6: quien recibio primero en un set saca primero en el siguiente).
   const currentServer = useMemo(
-    () => getCurrentServer(currentPoints, firstServer, pointsToWin),
-    [currentPoints, firstServer, pointsToWin]
+    () => getCurrentServer(currentPoints, getSetFirstServer(firstServer, currentSetNumber), pointsToWin),
+    [currentPoints, firstServer, currentSetNumber, pointsToWin]
   )
 
   // Igual de derivado que el saque (ver getAutoSidesSwapped), combinado con
@@ -97,20 +102,35 @@ export function useLiveMatch() {
     [timeoutStartedAt, timeoutsUsed, matchWinner]
   )
 
-  // Termina el time-out exactamente a los 60s y descuenta ese tramo de
-  // ambos cronometros (partido y set) sumandolo a lo ya pausado.
+  // Termina el time-out ya sea porque se cumplieron los 60s o porque el
+  // jugador lo corta antes con "Reanudar" (bloqueaba toda la pantalla sin
+  // forma de seguir jugando si nadie queria esperar el minuto completo).
+  // En ambos casos se descuenta el tramo realmente transcurrido de ambos
+  // cronometros (partido y set), no siempre 60s fijos.
+  const endTimeoutNow = useCallback(() => {
+    if (!timeoutStartedAt) return
+    if (timeoutTimerRef.current) {
+      clearTimeout(timeoutTimerRef.current)
+      timeoutTimerRef.current = null
+    }
+    const pausedFor = Date.now() - timeoutStartedAt
+    setPausedMs((prev) => prev + pausedFor)
+    setPausedSetMs((prev) => prev + pausedFor)
+    setTimeoutStartedAt(null)
+    setTimeoutPlayer(null)
+    playTimeoutEnd()
+  }, [timeoutStartedAt])
+
   useEffect(() => {
     if (!timeoutStartedAt) return
-    const timer = setTimeout(() => {
-      const pausedFor = Date.now() - timeoutStartedAt
-      setPausedMs((prev) => prev + pausedFor)
-      setPausedSetMs((prev) => prev + pausedFor)
-      setTimeoutStartedAt(null)
-      setTimeoutPlayer(null)
-      playTimeoutEnd()
-    }, 60000)
-    return () => clearTimeout(timer)
-  }, [timeoutStartedAt])
+    timeoutTimerRef.current = setTimeout(endTimeoutNow, 60000)
+    return () => {
+      if (timeoutTimerRef.current) {
+        clearTimeout(timeoutTimerRef.current)
+        timeoutTimerRef.current = null
+      }
+    }
+  }, [timeoutStartedAt, endTimeoutNow])
 
   const addPoint = useCallback(
     (player) => {
@@ -176,6 +196,10 @@ export function useLiveMatch() {
     setTimeoutStartedAt(null)
     setPausedMs(0)
     setPausedSetMs(0)
+    if (timeoutTimerRef.current) {
+      clearTimeout(timeoutTimerRef.current)
+      timeoutTimerRef.current = null
+    }
   }, [])
 
   useEffect(() => {
@@ -220,6 +244,7 @@ export function useLiveMatch() {
     timeoutPlayer,
     timeoutRemainingSeconds,
     startTimeout,
+    endTimeout: endTimeoutNow,
     matchWinner,
     hasStarted: started,
     addPoint,
