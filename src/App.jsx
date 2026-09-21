@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { App as CapacitorApp } from '@capacitor/app'
 import MatchScreen from './components/MatchScreen'
 import HistoryScreen from './components/HistoryScreen'
 import SplashScreen from './components/SplashScreen'
@@ -17,9 +18,30 @@ export default function App() {
   // Solo se muestra al montar la app (apertura), no al cambiar de pestaña:
   // las pestañas no remontan App, así que este estado no vuelve a activarse.
   const [showSplash, setShowSplash] = useState(true)
+  const historyScreenRef = useRef(null)
+
+  // Boton/gesto de retroceso nativo de Android: primero le da la oportunidad
+  // a la pantalla de Historial de cerrar su propio detalle (si hay uno
+  // abierto); si no hizo nada, se interpreta como "volver" entre pestañas;
+  // y desde la pestaña principal se deja salir la app en vez de interceptar.
+  useEffect(() => {
+    const listenerPromise = CapacitorApp.addListener('backButton', () => {
+      if (activeTab === 'history') {
+        const handled = historyScreenRef.current?.goBack()
+        if (handled) return
+        setActiveTab('match')
+        return
+      }
+      CapacitorApp.exitApp()
+    })
+
+    return () => {
+      listenerPromise.then((listener) => listener.remove())
+    }
+  }, [activeTab])
 
   return (
-    <div className="flex h-dvh flex-col bg-bg">
+    <div className="flex h-dvh flex-col bg-bg pt-[var(--safe-area-inset-top,env(safe-area-inset-top))]">
       {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
 
       {canInstall && !installBannerDismissed && (
@@ -52,12 +74,12 @@ export default function App() {
           <MatchScreen />
         </div>
         <div className={`h-full ${activeTab === 'history' ? 'theme-history bg-bg text-gray-900' : 'hidden'}`}>
-          <HistoryScreen active={activeTab === 'history'} />
+          <HistoryScreen ref={historyScreenRef} active={activeTab === 'history'} />
         </div>
       </main>
 
       <nav
-        className={`relative flex border-t pb-[env(safe-area-inset-bottom)] transition-colors ${
+        className={`relative flex border-t pb-[var(--safe-area-inset-bottom,env(safe-area-inset-bottom))] transition-colors ${
           activeTab === 'history' ? 'theme-history border-black/10 bg-surface' : 'border-white/10 bg-surface'
         }`}
       >

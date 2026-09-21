@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { getAllMatches, deleteMatch, importMatches } from '../db'
 import {
   countSetsWon,
@@ -22,7 +22,7 @@ const SUBTABS = [
   { id: 'h2h', label: 'Cara a cara' },
 ]
 
-export default function HistoryScreen({ active }) {
+const HistoryScreen = forwardRef(function HistoryScreen({ active }, ref) {
   const [matches, setMatches] = useState(null)
   const [subTab, setSubTab] = useState('matches')
   const [selectedMatch, setSelectedMatch] = useState(null)
@@ -33,6 +33,22 @@ export default function HistoryScreen({ active }) {
   useEffect(() => {
     if (active) refreshMatches()
   }, [active])
+
+  // Le permite al boton/gesto de retroceso nativo (App.jsx) cerrar el
+  // detalle de un partido antes de salir de la pestaña Historial.
+  useImperativeHandle(
+    ref,
+    () => ({
+      goBack() {
+        if (selectedMatch) {
+          setSelectedMatch(null)
+          return true
+        }
+        return false
+      },
+    }),
+    [selectedMatch]
+  )
 
   useEffect(() => {
     if (!statusMessage) return
@@ -187,7 +203,9 @@ export default function HistoryScreen({ active }) {
       />
     </div>
   )
-}
+})
+
+export default HistoryScreen
 
 function MatchesTab({ matches, roster, onOpen, onDelete }) {
   const [playerFilter, setPlayerFilter] = useState('')
