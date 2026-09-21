@@ -157,16 +157,14 @@ function ServerButton({ label, active, onClick }) {
 
 function PlayerNameField({ label, color, value, onChange }) {
   return (
-    <label className="block">
-      <span className={`mb-1 block text-sm font-semibold ${color}`}>{label}</span>
-      <input
-        type="text"
-        value={value}
-        maxLength={20}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl bg-surface-2 px-4 py-3 text-lg text-gray-100 outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-accent"
-        placeholder={label}
-      />
-    </label>
+    <input
+      type="text"
+      value={value}
+      maxLength={20}
+      onChange={(e) => onChange(e.target.value)}
+      aria-label={label}
+      className={`w-full rounded-xl bg-surface-2 px-4 py-3 text-lg font-semibold outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-accent ${color}`}
+      placeholder={label}
+    />
   )
 }
