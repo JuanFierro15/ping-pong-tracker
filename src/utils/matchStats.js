@@ -19,6 +19,11 @@ export function getPlayerTotals(matches) {
       if (!totals.has(key)) {
         totals.set(key, {
           name,
+          // matches ya viene ordenado de mas reciente a mas antiguo (ver
+          // getAllMatches), asi que el primer partido con este nombre que
+          // se encuentra es el ultimo jugado: su avatar es el que se
+          // muestra como identidad "actual" del jugador.
+          avatar: side === 'player1' ? match.player1Avatar : match.player2Avatar,
           matchesPlayed: 0,
           matchesWon: 0,
           setsWon: 0,
@@ -58,11 +63,25 @@ export function getHeadToHeadStats(matches) {
 
     const pairKey = [keyA, keyB].sort().join('|')
     if (!pairs.has(pairKey)) {
-      pairs.set(pairKey, { names: {}, wins: {}, setsWon: {}, pointsScored: {}, totalMatches: 0, results: [] })
+      pairs.set(pairKey, {
+        names: {},
+        avatars: {},
+        wins: {},
+        setsWon: {},
+        pointsScored: {},
+        totalMatches: 0,
+        results: [],
+      })
     }
     const entry = pairs.get(pairKey)
     entry.names[keyA] = nameA
     entry.names[keyB] = nameB
+    // Igual que en getPlayerTotals: matches viene de mas reciente a mas
+    // antiguo, asi que solo se fija la primera vez (el enfrentamiento mas
+    // reciente de esta pareja) y no se pisa en vueltas posteriores, incluso
+    // si ese partido mas reciente no tenia avatar (null es un valor valido).
+    if (!(keyA in entry.avatars)) entry.avatars[keyA] = match.player1Avatar
+    if (!(keyB in entry.avatars)) entry.avatars[keyB] = match.player2Avatar
     entry.wins[keyA] ??= 0
     entry.wins[keyB] ??= 0
     entry.setsWon[keyA] ??= 0
@@ -96,6 +115,8 @@ export function getHeadToHeadStats(matches) {
       return {
         playerA: entry.names[keyA],
         playerB: entry.names[keyB],
+        avatarA: entry.avatars[keyA],
+        avatarB: entry.avatars[keyB],
         winsA: entry.wins[keyA],
         winsB: entry.wins[keyB],
         setsA: entry.setsWon[keyA],

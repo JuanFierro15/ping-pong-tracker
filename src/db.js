@@ -33,6 +33,12 @@ function isValidSet(set) {
   )
 }
 
+function isValidAvatar(avatar) {
+  return (
+    avatar && typeof avatar === 'object' && typeof avatar.emoji === 'string' && typeof avatar.color === 'string'
+  )
+}
+
 function isValidMatch(match) {
   return (
     match &&
@@ -67,6 +73,8 @@ export async function importMatches(rawMatches) {
     ...(typeof match.matchFormat === 'string' ? { matchFormat: match.matchFormat } : {}),
     ...(typeof match.pointsToWin === 'number' ? { pointsToWin: match.pointsToWin } : {}),
     ...(typeof match.durationMs === 'number' ? { durationMs: match.durationMs } : {}),
+    ...(isValidAvatar(match.player1Avatar) ? { player1Avatar: match.player1Avatar } : {}),
+    ...(isValidAvatar(match.player2Avatar) ? { player2Avatar: match.player2Avatar } : {}),
   }))
 
   await db.matches.bulkPut(toInsert)

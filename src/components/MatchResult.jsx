@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { countSetsWon } from '../utils/gameLogic'
 import { shareMatchResult } from '../utils/shareMatch'
 import { ShareIcon, TrophyIcon } from './icons'
+import PlayerAvatar from './PlayerAvatar'
 
 const CONFETTI_COLORS = ['#f97316', '#eef2ea', '#f59e0b', '#15803d', '#fb923c']
 const CONFETTI = Array.from({ length: 18 }, (_, i) => ({
@@ -15,9 +16,19 @@ const STREAMERS = Array.from({ length: 10 }, (_, i) => ({
   color: CONFETTI_COLORS[(i + 2) % CONFETTI_COLORS.length],
 }))
 
-export default function MatchResult({ player1Name, player2Name, sets, winner, onNewMatch }) {
+export default function MatchResult({
+  player1Name,
+  player2Name,
+  player1Avatar,
+  player2Avatar,
+  sets,
+  winner,
+  onNewMatch,
+}) {
   const setsWon = countSetsWon(sets)
   const winnerName = winner === 'player1' ? player1Name : player2Name
+  const winnerAvatar = winner === 'player1' ? player1Avatar : player2Avatar
+  const winnerFallbackClass = winner === 'player1' ? 'bg-player1/10 text-player1' : 'bg-player2/10 text-player2'
   const [toast, setToast] = useState(null)
 
   async function handleShare() {
@@ -60,7 +71,14 @@ export default function MatchResult({ player1Name, player2Name, sets, winner, on
 
         <div className="row-in" style={{ animationDelay: '120ms' }}>
           <p className="text-sm font-semibold uppercase tracking-widest text-accent">Partido terminado</p>
-          <h1 className="mt-2 text-3xl font-extrabold text-gray-100">{winnerName} gana</h1>
+          <h1 className="mt-2 flex items-center justify-center gap-2 text-3xl font-extrabold text-gray-100">
+            <PlayerAvatar
+              avatar={winnerAvatar}
+              fallbackClass={winnerFallbackClass}
+              className="h-9 w-9 text-xl"
+            />
+            {winnerName} gana
+          </h1>
           <p className="mt-1 text-lg text-gray-400">
             {setsWon.player1} - {setsWon.player2} en sets
           </p>

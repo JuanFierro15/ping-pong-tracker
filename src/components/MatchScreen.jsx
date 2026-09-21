@@ -12,6 +12,10 @@ export default function MatchScreen() {
     setPlayer1Name,
     player2Name,
     setPlayer2Name,
+    player1Avatar,
+    setPlayer1Avatar,
+    player2Avatar,
+    setPlayer2Avatar,
     matchFormat,
     setMatchFormat,
     pointsToWin,
@@ -50,6 +54,10 @@ export default function MatchScreen() {
         player2Name={player2Name}
         onChangePlayer1Name={setPlayer1Name}
         onChangePlayer2Name={setPlayer2Name}
+        player1Avatar={player1Avatar}
+        onChangePlayer1Avatar={setPlayer1Avatar}
+        player2Avatar={player2Avatar}
+        onChangePlayer2Avatar={setPlayer2Avatar}
         matchFormat={matchFormat}
         onChangeMatchFormat={setMatchFormat}
         pointsToWin={pointsToWin}
@@ -66,6 +74,10 @@ export default function MatchScreen() {
       <MatchResult
         player1Name={player1Name}
         player2Name={player2Name}
+        player1Avatar={player1Avatar}
+        player2Avatar={player2Avatar}
+        matchFormat={matchFormat}
+        pointsToWin={pointsToWin}
         sets={sets}
         winner={matchWinner}
         onNewMatch={resetMatch}
@@ -93,6 +105,8 @@ export default function MatchScreen() {
       <ScoreBoard
         player1Name={player1Name}
         player2Name={player2Name}
+        player1Avatar={player1Avatar}
+        player2Avatar={player2Avatar}
         currentPoints={currentPoints}
         sets={sets}
         setsToWin={getSetsToWin(matchFormat)}

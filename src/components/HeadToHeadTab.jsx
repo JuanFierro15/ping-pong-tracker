@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ChevronDownIcon } from './icons'
 import EmptyState from './EmptyState'
+import PlayerAvatar from './PlayerAvatar'
 
 function normalizeKey(name) {
   return name.trim().toLowerCase()
@@ -11,8 +12,26 @@ function normalizeKey(name) {
 function orientPair(entry, playerA) {
   const aIsFirst = normalizeKey(entry.playerA) === normalizeKey(playerA)
   return aIsFirst
-    ? { matchesA: entry.winsA, matchesB: entry.winsB, setsA: entry.setsA, setsB: entry.setsB, pointsA: entry.pointsA, pointsB: entry.pointsB }
-    : { matchesA: entry.winsB, matchesB: entry.winsA, setsA: entry.setsB, setsB: entry.setsA, pointsA: entry.pointsB, pointsB: entry.pointsA }
+    ? {
+        matchesA: entry.winsA,
+        matchesB: entry.winsB,
+        setsA: entry.setsA,
+        setsB: entry.setsB,
+        pointsA: entry.pointsA,
+        pointsB: entry.pointsB,
+        avatarA: entry.avatarA,
+        avatarB: entry.avatarB,
+      }
+    : {
+        matchesA: entry.winsB,
+        matchesB: entry.winsA,
+        setsA: entry.setsB,
+        setsB: entry.setsA,
+        pointsA: entry.pointsB,
+        pointsB: entry.pointsA,
+        avatarA: entry.avatarB,
+        avatarB: entry.avatarA,
+      }
 }
 
 export default function HeadToHeadTab({ roster, headToHeadStats }) {
@@ -59,6 +78,17 @@ export default function HeadToHeadTab({ roster, headToHeadStats }) {
 
       {!sameSelection && oriented && (
         <div className="flex flex-col gap-3 rounded-xl bg-surface p-4 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)]">
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-sm font-bold text-gray-900">
+              <PlayerAvatar avatar={oriented.avatarA} fallbackClass="bg-player1/10 text-player1" className="h-7 w-7 text-sm" />
+              {playerA}
+            </span>
+            <span className="flex items-center gap-1.5 text-sm font-bold text-gray-900">
+              {playerB}
+              <PlayerAvatar avatar={oriented.avatarB} fallbackClass="bg-player2/10 text-player2" className="h-7 w-7 text-sm" />
+            </span>
+          </div>
+          <div className="h-px bg-black/10" />
           <Row label="Partidos ganados" a={oriented.matchesA} b={oriented.matchesB} />
           <WinRateRow winRateA={winRateA} winRateB={winRateB} />
           <Row label="Sets ganados" a={oriented.setsA} b={oriented.setsB} />

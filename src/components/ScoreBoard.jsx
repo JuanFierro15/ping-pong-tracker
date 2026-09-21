@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { countSetsWon } from '../utils/gameLogic'
 import { formatDuration } from '../utils/time'
-import { PingPongBallIcon, CheckIcon, ClockIcon, SwapIcon, UndoIcon, XIcon } from './icons'
+import { CheckIcon, ClockIcon, SwapIcon, UndoIcon, XIcon } from './icons'
+import PlayerAvatar from './PlayerAvatar'
 
 // Chispas que salen disparadas del número al anotar: ángulos repartidos en
 // círculo, con una pequeña variación por toque para que no se vean idénticas.
@@ -21,6 +22,8 @@ function burstParticles(tick) {
 export default function ScoreBoard({
   player1Name,
   player2Name,
+  player1Avatar,
+  player2Avatar,
   currentPoints,
   sets,
   setsToWin,
@@ -92,6 +95,7 @@ export default function ScoreBoard({
   const playerProps = {
     player1: {
       name: player1Name,
+      avatar: player1Avatar,
       points: currentPoints.player1,
       setsWon: setsWon.player1,
       serving: currentServer === 'player1',
@@ -102,6 +106,7 @@ export default function ScoreBoard({
     },
     player2: {
       name: player2Name,
+      avatar: player2Avatar,
       points: currentPoints.player2,
       setsWon: setsWon.player2,
       serving: currentServer === 'player2',
@@ -222,6 +227,7 @@ export default function ScoreBoard({
 
 function PlayerHalf({
   name,
+  avatar,
   points,
   setsWon,
   setsToWin,
@@ -248,7 +254,9 @@ function PlayerHalf({
         className="flex flex-1 flex-col items-center justify-center gap-3 active:brightness-125 transition"
       >
         <span className="flex max-w-[80%] items-center gap-1.5">
-          {serving && <PingPongBallIcon className="h-4 w-4 shrink-0" />}
+          {serving && (
+            <PlayerAvatar avatar={avatar} fallbackClass={colorClass} className="h-5 w-5 text-xs shrink-0" />
+          )}
           <span className="truncate text-lg font-bold">{name}</span>
         </span>
 

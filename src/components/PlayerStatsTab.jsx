@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ChevronDownIcon } from './icons'
 import EmptyState from './EmptyState'
+import PlayerAvatar from './PlayerAvatar'
 
 export default function PlayerStatsTab({ playerTotals }) {
   const roster = playerTotals.map((p) => p.name)
@@ -37,7 +38,16 @@ export default function PlayerStatsTab({ playerTotals }) {
         <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
       </div>
 
-      <div key={selected} className="grid grid-cols-2 gap-2.5">
+      <div key={selected} className="mb-3 flex items-center gap-2">
+        <PlayerAvatar
+          avatar={stats.avatar}
+          fallbackClass="bg-player1/10 text-player1"
+          className="h-9 w-9 text-lg"
+        />
+        <span className="text-base font-bold text-gray-900">{stats.name}</span>
+      </div>
+
+      <div key={`${selected}-stats`} className="grid grid-cols-2 gap-2.5">
         <StatTile
           value={`${stats.matchesWon}/${stats.matchesPlayed}`}
           label="Partidos ganados"

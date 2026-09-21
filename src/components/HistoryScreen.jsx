@@ -13,6 +13,7 @@ import PlayerStatsTab from './PlayerStatsTab'
 import HeadToHeadTab from './HeadToHeadTab'
 import EmptyState from './EmptyState'
 import { DownloadIcon, UploadIcon, TrashIcon, TrophyIcon, ChevronDownIcon } from './icons'
+import PlayerAvatar from './PlayerAvatar'
 
 const MATCHES_PER_PAGE = 7
 
@@ -366,8 +367,20 @@ function MatchListItem({ match, isLast, delay, onOpen, onDelete }) {
             {setsWon.player1} - {setsWon.player2}
           </span>
         </div>
-        <div className="mt-0.5 text-sm font-semibold text-gray-900">
-          {match.player1Name} vs {match.player2Name}
+        <div className="mt-0.5 flex items-center gap-1.5 text-sm font-semibold text-gray-900">
+          <PlayerAvatar
+            avatar={match.player1Avatar}
+            fallbackClass="bg-player1/10 text-player1"
+            className="h-5 w-5 text-xs"
+          />
+          <span className="truncate">
+            {match.player1Name} vs {match.player2Name}
+          </span>
+          <PlayerAvatar
+            avatar={match.player2Avatar}
+            fallbackClass="bg-player2/10 text-player2"
+            className="h-5 w-5 text-xs shrink-0"
+          />
         </div>
         <div className="mt-0.5 flex items-center justify-between gap-2">
           <span className="flex items-center gap-1 text-xs font-semibold text-accent">

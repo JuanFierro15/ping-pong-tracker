@@ -15,6 +15,9 @@ import { playTimeoutEnd, playTimeoutStart } from '../utils/sounds'
 export function useLiveMatch() {
   const [player1Name, setPlayer1Name] = useState('Jugador 1')
   const [player2Name, setPlayer2Name] = useState('Jugador 2')
+  // null = sin avatar personalizado (usa el naranja/blanco por defecto).
+  const [player1Avatar, setPlayer1Avatar] = useState(null)
+  const [player2Avatar, setPlayer2Avatar] = useState(null)
   const [matchFormat, setMatchFormat] = useState(DEFAULT_MATCH_FORMAT)
   const [pointsToWin, setPointsToWin] = useState(DEFAULT_POINTS_TO_WIN)
   const [firstServer, setFirstServer] = useState(DEFAULT_FIRST_SERVER)
@@ -209,6 +212,8 @@ export function useLiveMatch() {
         date: new Date().toISOString(),
         player1Name,
         player2Name,
+        player1Avatar,
+        player2Avatar,
         sets,
         winner: matchWinner,
         matchFormat,
@@ -218,13 +223,28 @@ export function useLiveMatch() {
       setSaved(true)
       saveMatch(match)
     }
-  }, [matchWinner, saved, sets, player1Name, player2Name, matchFormat, pointsToWin, matchElapsedMs])
+  }, [
+    matchWinner,
+    saved,
+    sets,
+    player1Name,
+    player2Name,
+    player1Avatar,
+    player2Avatar,
+    matchFormat,
+    pointsToWin,
+    matchElapsedMs,
+  ])
 
   return {
     player1Name,
     setPlayer1Name,
     player2Name,
     setPlayer2Name,
+    player1Avatar,
+    setPlayer1Avatar,
+    player2Avatar,
+    setPlayer2Avatar,
     matchFormat,
     setMatchFormat,
     pointsToWin,
