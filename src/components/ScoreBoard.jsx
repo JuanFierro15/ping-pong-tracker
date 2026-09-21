@@ -244,7 +244,7 @@ function PlayerHalf({
 
         <div className="relative inline-flex">
           {active && (
-            <div key={tick} className="pointer-events-none absolute left-1/2 top-1/2 h-0 w-0">
+            <div key={`ripple-${tick}`} className="pointer-events-none absolute left-1/2 top-1/2 h-0 w-0">
               <div
                 className="score-ripple absolute left-0 top-0 -m-[75px] h-[150px] w-[150px] rounded-full"
                 style={{ background: 'radial-gradient(circle, currentColor, transparent 70%)' }}
@@ -259,7 +259,7 @@ function PlayerHalf({
               ))}
             </div>
           )}
-          <span key={points} className="score-pulse relative text-[7rem] font-black leading-none tabular-nums">
+          <span key={`score-${points}`} className="score-pulse relative text-[7rem] font-black leading-none tabular-nums">
             {points}
           </span>
         </div>
