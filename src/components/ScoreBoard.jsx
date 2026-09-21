@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { countSetsWon } from '../utils/gameLogic'
-import { CheckIcon, UndoIcon, XIcon } from './icons'
+import { BallIcon, CheckIcon, UndoIcon, XIcon } from './icons'
 
 // Chispas que salen disparadas del número al anotar: ángulos repartidos en
 // círculo, con una pequeña variación por toque para que no se vean idénticas.
@@ -24,6 +24,7 @@ export default function ScoreBoard({
   sets,
   setsToWin,
   currentSetNumber,
+  currentServer,
   onScorePlayer1,
   onScorePlayer2,
   onUndo,
@@ -61,6 +62,7 @@ export default function ScoreBoard({
         points={currentPoints.player2}
         setsWon={setsWon.player2}
         setsToWin={setsToWin}
+        serving={currentServer === 'player2'}
         colorClass="bg-player2/10 text-player2"
         rotate
         active={tap.player === 'player2'}
@@ -105,6 +107,7 @@ export default function ScoreBoard({
         points={currentPoints.player1}
         setsWon={setsWon.player1}
         setsToWin={setsToWin}
+        serving={currentServer === 'player1'}
         colorClass="bg-player1/10 text-player1"
         active={tap.player === 'player1'}
         tick={tap.tick}
@@ -124,7 +127,7 @@ export default function ScoreBoard({
   )
 }
 
-function PlayerHalf({ name, points, setsWon, setsToWin, colorClass, rotate, active, tick, onTap }) {
+function PlayerHalf({ name, points, setsWon, setsToWin, serving, colorClass, rotate, active, tick, onTap }) {
   const particles = active ? burstParticles(tick) : []
 
   return (
@@ -134,7 +137,10 @@ function PlayerHalf({ name, points, setsWon, setsToWin, colorClass, rotate, acti
       className={`flex flex-1 flex-col items-center justify-center gap-3 ${colorClass} active:brightness-125 transition`}
       style={rotate ? { transform: 'rotate(180deg)' } : undefined}
     >
-      <span className="max-w-[80%] truncate text-lg font-bold">{name}</span>
+      <span className="flex max-w-[80%] items-center gap-1.5">
+        {serving && <BallIcon className="h-4 w-4 shrink-0" />}
+        <span className="truncate text-lg font-bold">{name}</span>
+      </span>
 
       <div className="relative inline-flex">
         {active && (

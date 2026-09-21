@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { computeMatchState, DEFAULT_MATCH_FORMAT, DEFAULT_POINTS_TO_WIN } from '../utils/gameLogic'
+import {
+  computeMatchState,
+  getCurrentServer,
+  DEFAULT_MATCH_FORMAT,
+  DEFAULT_POINTS_TO_WIN,
+  DEFAULT_FIRST_SERVER,
+} from '../utils/gameLogic'
 import { saveMatch } from '../db'
 import { vibrateMatchWon, vibratePoint, vibrateSetWon } from '../utils/haptics'
 
@@ -8,6 +14,7 @@ export function useLiveMatch() {
   const [player2Name, setPlayer2Name] = useState('Jugador 2')
   const [matchFormat, setMatchFormat] = useState(DEFAULT_MATCH_FORMAT)
   const [pointsToWin, setPointsToWin] = useState(DEFAULT_POINTS_TO_WIN)
+  const [firstServer, setFirstServer] = useState(DEFAULT_FIRST_SERVER)
   const [events, setEvents] = useState([])
   const [saved, setSaved] = useState(false)
   const [started, setStarted] = useState(false)
@@ -17,6 +24,12 @@ export function useLiveMatch() {
   const { sets, currentPoints, currentSetNumber, matchWinner } = useMemo(
     () => computeMatchState(events, matchRules),
     [events, matchRules]
+  )
+
+  // Derivado del marcador actual, nunca guardado aparte: ver getCurrentServer.
+  const currentServer = useMemo(
+    () => getCurrentServer(currentPoints, firstServer, pointsToWin),
+    [currentPoints, firstServer, pointsToWin]
   )
 
   const addPoint = useCallback(
@@ -83,9 +96,12 @@ export function useLiveMatch() {
     setMatchFormat,
     pointsToWin,
     setPointsToWin,
+    firstServer,
+    setFirstServer,
     sets,
     currentPoints,
     currentSetNumber,
+    currentServer,
     matchWinner,
     hasStarted: started,
     addPoint,

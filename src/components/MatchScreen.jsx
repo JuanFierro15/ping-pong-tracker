@@ -16,9 +16,12 @@ export default function MatchScreen() {
     setMatchFormat,
     pointsToWin,
     setPointsToWin,
+    firstServer,
+    setFirstServer,
     sets,
     currentPoints,
     currentSetNumber,
+    currentServer,
     matchWinner,
     hasStarted,
     addPoint,
@@ -41,6 +44,8 @@ export default function MatchScreen() {
         onChangeMatchFormat={setMatchFormat}
         pointsToWin={pointsToWin}
         onChangePointsToWin={setPointsToWin}
+        firstServer={firstServer}
+        onChangeFirstServer={setFirstServer}
         onStart={startMatch}
       />
     )
@@ -82,6 +87,7 @@ export default function MatchScreen() {
         sets={sets}
         setsToWin={getSetsToWin(matchFormat)}
         currentSetNumber={currentSetNumber}
+        currentServer={currentServer}
         onScorePlayer1={() => addPoint('player1')}
         onScorePlayer2={() => addPoint('player2')}
         onUndo={handleUndoRequest}
