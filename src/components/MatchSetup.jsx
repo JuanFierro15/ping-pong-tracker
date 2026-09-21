@@ -10,6 +10,8 @@ export default function MatchSetup({
   onChangeMatchFormat,
   pointsToWin,
   onChangePointsToWin,
+  firstServer,
+  onChangeFirstServer,
   onStart,
 }) {
   const totalSets = MATCH_FORMATS[matchFormat].totalSets
@@ -46,6 +48,12 @@ export default function MatchSetup({
           color="text-player2"
           value={player2Name}
           onChange={onChangePlayer2Name}
+        />
+        <FirstServerField
+          player1Name={player1Name}
+          player2Name={player2Name}
+          value={firstServer}
+          onChange={onChangeFirstServer}
         />
       </div>
 
@@ -102,6 +110,41 @@ function PointsField({ value, onChange }) {
         <ChevronDownIcon className="pointer-events-none absolute right-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
       </div>
     </label>
+  )
+}
+
+function FirstServerField({ player1Name, player2Name, value, onChange }) {
+  return (
+    <div>
+      <span className="mb-1 block text-sm font-semibold text-gray-300">Saca primero</span>
+      <div className="flex gap-2">
+        <ServerButton
+          label={player1Name || 'Jugador 1'}
+          active={value === 'player1'}
+          onClick={() => onChange('player1')}
+        />
+        <ServerButton
+          label={player2Name || 'Jugador 2'}
+          active={value === 'player2'}
+          onClick={() => onChange('player2')}
+        />
+      </div>
+    </div>
+  )
+}
+
+function ServerButton({ label, active, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-semibold transition active:scale-95 ${
+        active ? 'bg-accent text-white' : 'bg-surface-2 text-gray-300 ring-1 ring-white/10'
+      }`}
+    >
+      {active && <BallIcon className="h-3.5 w-3.5 shrink-0" />}
+      <span className="truncate">{label}</span>
+    </button>
   )
 }
 
