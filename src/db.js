@@ -66,6 +66,7 @@ export async function importMatches(rawMatches) {
     // traen, y el resto de la app ya asume bo3/11 por defecto si faltan.
     ...(typeof match.matchFormat === 'string' ? { matchFormat: match.matchFormat } : {}),
     ...(typeof match.pointsToWin === 'number' ? { pointsToWin: match.pointsToWin } : {}),
+    ...(typeof match.durationMs === 'number' ? { durationMs: match.durationMs } : {}),
   }))
 
   await db.matches.bulkPut(toInsert)

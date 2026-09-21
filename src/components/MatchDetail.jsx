@@ -5,6 +5,7 @@ import {
   DEFAULT_MATCH_FORMAT,
   DEFAULT_POINTS_TO_WIN,
 } from '../utils/gameLogic'
+import { formatDuration } from '../utils/time'
 import { updateMatchPlayerNames } from '../db'
 import { shareMatchResult } from '../utils/shareMatch'
 import { ChevronLeftIcon, PencilIcon, ShareIcon, TrophyIcon } from './icons'
@@ -79,6 +80,9 @@ export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpd
         <p className="text-sm text-gray-500">{formatDate(match.date)}</p>
         <p className="mt-0.5 text-xs font-semibold uppercase tracking-wide text-gray-600">
           {formatLabel} · a {pointsToWin} puntos
+          {/* Partidos jugados antes de esta funcionalidad no tienen duracion
+              guardada: se omite en vez de mostrar un 00:00 enganoso. */}
+          {typeof match.durationMs === 'number' && ` · ${formatDuration(match.durationMs)}`}
         </p>
 
         {editing ? (

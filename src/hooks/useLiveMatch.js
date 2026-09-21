@@ -21,6 +21,14 @@ export function useLiveMatch() {
   const [saved, setSaved] = useState(false)
   const [started, setStarted] = useState(false)
 
+  // Cronometro: arranca con el primer punto anotado, no al abrir la
+  // pantalla de Setup. matchStartedAt/setStartedAt se fijan de forma
+  // imperativa en addPoint (no via efecto) para capturar el instante real
+  // en que se anoto el punto, no el del siguiente render.
+  const [matchStartedAt, setMatchStartedAt] = useState(null)
+  const [setStartedAt, setSetStartedAt] = useState(null)
+  const [now, setNow] = useState(Date.now())
+
   const matchRules = useMemo(() => ({ matchFormat, pointsToWin }), [matchFormat, pointsToWin])
 
   const { sets, currentPoints, currentSetNumber, matchWinner } = useMemo(
@@ -49,13 +57,42 @@ export function useLiveMatch() {
     setManualSwap((prev) => !prev)
   }, [])
 
+  // Un tick por segundo mientras el partido esta en marcha, para que los
+  // cronometros de partido/set se vean correr. Se detiene solo (no hay
+  // timer de fondo) en cuanto termina el partido o todavia no arranco.
+  useEffect(() => {
+    if (!matchStartedAt || matchWinner) return
+    const interval = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(interval)
+  }, [matchStartedAt, matchWinner])
+
+  const matchElapsedMs = matchStartedAt ? now - matchStartedAt : 0
+  const setElapsedMs = setStartedAt ? now - setStartedAt : 0
+
   const addPoint = useCallback(
     (player) => {
       if (matchWinner) return
+      const pointTime = Date.now()
+
+      // currentPoints en 0-0 significa que este punto es el primero de su
+      // set (incluido el primer punto de todo el partido, que tambien es
+      // el primero del set 1), asi que es el instante correcto para
+      // arrancar/reiniciar el cronometro del set.
+      if (currentPoints.player1 === 0 && currentPoints.player2 === 0) {
+        setSetStartedAt(pointTime)
+      }
+      if (!matchStartedAt) {
+        setMatchStartedAt(pointTime)
+      }
+
       const newEvents = [...events, player]
       const newState = computeMatchState(newEvents, matchRules)
 
       if (newState.matchWinner) {
+        // Fija "now" en el instante exacto del punto ganador: sin esto, la
+        // duracion guardada del partido podria quedar hasta un segundo
+        // desfasada (el ultimo tick del intervalo no llega a tiempo).
+        setNow(pointTime)
         vibrateMatchWon()
       } else if (newState.sets.length > sets.length) {
         vibrateSetWon()
@@ -65,7 +102,7 @@ export function useLiveMatch() {
 
       setEvents(newEvents)
     },
-    [events, matchWinner, sets.length, matchRules]
+    [events, matchWinner, sets.length, matchRules, currentPoints, matchStartedAt]
   )
 
   const undoLastPoint = useCallback(() => {
@@ -86,6 +123,8 @@ export function useLiveMatch() {
     setSaved(false)
     setStarted(false)
     setManualSwap(false)
+    setMatchStartedAt(null)
+    setSetStartedAt(null)
   }, [])
 
   useEffect(() => {
@@ -99,11 +138,12 @@ export function useLiveMatch() {
         winner: matchWinner,
         matchFormat,
         pointsToWin,
+        durationMs: matchElapsedMs,
       }
       setSaved(true)
       saveMatch(match)
     }
-  }, [matchWinner, saved, sets, player1Name, player2Name, matchFormat, pointsToWin])
+  }, [matchWinner, saved, sets, player1Name, player2Name, matchFormat, pointsToWin, matchElapsedMs])
 
   return {
     player1Name,
@@ -123,6 +163,8 @@ export function useLiveMatch() {
     sidesSwapped,
     autoSwapped,
     toggleSides,
+    matchElapsedMs,
+    setElapsedMs,
     matchWinner,
     hasStarted: started,
     addPoint,

@@ -25,6 +25,8 @@ export default function MatchScreen() {
     sidesSwapped,
     autoSwapped,
     toggleSides,
+    matchElapsedMs,
+    setElapsedMs,
     matchWinner,
     hasStarted,
     addPoint,
@@ -94,6 +96,8 @@ export default function MatchScreen() {
         sidesSwapped={sidesSwapped}
         autoSwapped={autoSwapped}
         onToggleSides={toggleSides}
+        matchElapsedMs={matchElapsedMs}
+        setElapsedMs={setElapsedMs}
         onScorePlayer1={() => addPoint('player1')}
         onScorePlayer2={() => addPoint('player2')}
         onUndo={handleUndoRequest}

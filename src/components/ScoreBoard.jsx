@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { countSetsWon } from '../utils/gameLogic'
+import { formatDuration } from '../utils/time'
 import { BallIcon, CheckIcon, SwapIcon, UndoIcon, XIcon } from './icons'
 
 // Chispas que salen disparadas del número al anotar: ángulos repartidos en
@@ -28,6 +29,8 @@ export default function ScoreBoard({
   sidesSwapped,
   autoSwapped,
   onToggleSides,
+  matchElapsedMs,
+  setElapsedMs,
   onScorePlayer1,
   onScorePlayer2,
   onUndo,
@@ -120,6 +123,11 @@ export default function ScoreBoard({
         <div className="flex flex-col items-center">
           <span className="text-xs font-semibold uppercase tracking-widest text-gray-300">
             Set {currentSetNumber}
+          </span>
+          <span className="mt-0.5 flex items-center gap-1.5 text-[11px] tabular-nums text-gray-400">
+            <span>{formatDuration(setElapsedMs)}</span>
+            <span className="text-gray-600">·</span>
+            <span>{formatDuration(matchElapsedMs)} total</span>
           </span>
           {sets.length > 0 && (
             <span className="mt-0.5 text-[11px] text-gray-400">
