@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { getAllMatches, deleteMatch, importMatches } from '../db'
-import { countSetsWon } from '../utils/gameLogic'
+import {
+  countSetsWon,
+  MATCH_FORMATS,
+  DEFAULT_MATCH_FORMAT,
+  DEFAULT_POINTS_TO_WIN,
+} from '../utils/gameLogic'
 import { getHeadToHeadStats, getPlayerTotals } from '../utils/matchStats'
 import ConfirmDialog from './ConfirmDialog'
 import MatchDetail from './MatchDetail'
@@ -322,6 +327,10 @@ function MatchesTab({ matches, roster, onOpen, onDelete }) {
 function MatchListItem({ match, isLast, delay, onOpen, onDelete }) {
   const setsWon = countSetsWon(match.sets)
   const winnerName = match.winner === 'player1' ? match.player1Name : match.player2Name
+  // Partidos guardados antes de esta funcionalidad no tienen estos campos:
+  // se asume bo3/11, igual que en MatchDetail.
+  const matchFormat = MATCH_FORMATS[match.matchFormat] ? match.matchFormat : DEFAULT_MATCH_FORMAT
+  const pointsToWin = match.pointsToWin ?? DEFAULT_POINTS_TO_WIN
 
   return (
     <div
@@ -342,9 +351,14 @@ function MatchListItem({ match, isLast, delay, onOpen, onDelete }) {
         <div className="mt-0.5 text-sm font-semibold text-gray-900">
           {match.player1Name} vs {match.player2Name}
         </div>
-        <div className="mt-0.5 flex items-center gap-1 text-xs font-semibold text-accent">
-          <TrophyIcon className="h-3 w-3" />
-          {winnerName}
+        <div className="mt-0.5 flex items-center justify-between gap-2">
+          <span className="flex items-center gap-1 text-xs font-semibold text-accent">
+            <TrophyIcon className="h-3 w-3" />
+            {winnerName}
+          </span>
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+            {MATCH_FORMATS[matchFormat].label} · {pointsToWin} pts
+          </span>
         </div>
       </button>
       <button
