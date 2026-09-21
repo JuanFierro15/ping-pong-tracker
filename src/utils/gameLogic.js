@@ -67,6 +67,35 @@ export function getCurrentServer(currentPoints, firstServer = DEFAULT_FIRST_SERV
   return turn % 2 === 0 ? firstServer : otherPlayer
 }
 
+// Cuantos cambios de lado automaticos ya deberian haber ocurrido a esta
+// altura del partido, derivado siempre del set actual y el marcador (nunca
+// guardado aparte, mismo criterio que getCurrentServer).
+//
+// Reglamento: los jugadores cambian de lado al terminar cada set (por eso
+// currentSetNumber-1: uno por cada set ya cerrado). En el set decisivo -el
+// ultimo posible segun el formato: el 3.o en Bo3, el 5.o en Bo5, el 7.o en
+// Bo7- hay ademas un cambio extra a mitad de set, cuando alguno de los dos
+// llega a la mitad de pointsToWin (redondeando hacia abajo: 5 a 11 puntos,
+// igual que la regla oficial ITTF). En Bo1 no aplica: al ser el unico set
+// no hay "set decisivo" que distinguir.
+export function getAutoSwapCount(currentSetNumber, currentPoints, matchFormat = DEFAULT_MATCH_FORMAT, pointsToWin = DEFAULT_POINTS_TO_WIN) {
+  let swaps = currentSetNumber - 1
+
+  const isDecisiveSet = matchFormat !== 'bo1' && currentSetNumber === MATCH_FORMATS[matchFormat].totalSets
+  if (isDecisiveSet) {
+    const midpoint = Math.floor(pointsToWin / 2)
+    if (Math.max(currentPoints.player1, currentPoints.player2) >= midpoint) {
+      swaps += 1
+    }
+  }
+
+  return swaps
+}
+
+export function getAutoSidesSwapped(currentSetNumber, currentPoints, matchFormat, pointsToWin) {
+  return getAutoSwapCount(currentSetNumber, currentPoints, matchFormat, pointsToWin) % 2 === 1
+}
+
 export function countSetsWon(sets) {
   return sets.reduce(
     (acc, set) => {
