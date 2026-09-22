@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { countSetsWon } from '../utils/gameLogic'
 import { shareMatchResult } from '../utils/shareMatch'
 import { ShareIcon, TrophyIcon } from './icons'
 import PlayerAvatar from './PlayerAvatar'
+import ShareCard from './ShareCard'
 
 const CONFETTI_COLORS = ['#f97316', '#eef2ea', '#f59e0b', '#15803d', '#fb923c']
 const CONFETTI = Array.from({ length: 18 }, (_, i) => ({
@@ -21,6 +22,8 @@ export default function MatchResult({
   player2Name,
   player1Avatar,
   player2Avatar,
+  matchFormat,
+  pointsToWin,
   sets,
   winner,
   onNewMatch,
@@ -30,9 +33,27 @@ export default function MatchResult({
   const winnerAvatar = winner === 'player1' ? player1Avatar : player2Avatar
   const winnerFallbackClass = winner === 'player1' ? 'bg-player1/10 text-player1' : 'bg-player2/10 text-player2'
   const [toast, setToast] = useState(null)
+  const cardRef = useRef(null)
+  // El partido ya se guardo con su propia fecha real (ver useLiveMatch); esta
+  // solo es para mostrar en la tarjeta de compartir, que se arma con lo que
+  // hay disponible en este componente, asi que "ahora" es una aproximacion
+  // suficiente (la diferencia con la fecha real guardada es de milisegundos).
+  const shareDate = useMemo(() => new Date().toISOString(), [])
+
+  const cardMatch = {
+    player1Name,
+    player2Name,
+    player1Avatar,
+    player2Avatar,
+    matchFormat,
+    pointsToWin,
+    sets,
+    winner,
+    date: shareDate,
+  }
 
   async function handleShare() {
-    const result = await shareMatchResult({ player1Name, player2Name, sets })
+    const result = await shareMatchResult(cardMatch, cardRef.current)
     if (result === 'copied') {
       setToast('Resultado copiado')
       setTimeout(() => setToast(null), 2500)
@@ -130,6 +151,8 @@ export default function MatchResult({
           {toast}
         </div>
       )}
+
+      <ShareCard ref={cardRef} match={cardMatch} />
     </div>
   )
 }

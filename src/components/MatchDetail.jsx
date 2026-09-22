@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   countSetsWon,
   MATCH_FORMATS,
@@ -9,12 +9,14 @@ import { formatDuration } from '../utils/time'
 import { updateMatchPlayerNames } from '../db'
 import { shareMatchResult } from '../utils/shareMatch'
 import { ChevronLeftIcon, PencilIcon, ShareIcon, TrophyIcon } from './icons'
+import ShareCard from './ShareCard'
 
 export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpdated }) {
   const [editing, setEditing] = useState(false)
   const [player1Name, setPlayer1Name] = useState(match.player1Name)
   const [player2Name, setPlayer2Name] = useState(match.player2Name)
   const [toast, setToast] = useState(null)
+  const cardRef = useRef(null)
 
   const setsWon = countSetsWon(match.sets)
   const winnerName = match.winner === 'player1' ? match.player1Name : match.player2Name
@@ -25,7 +27,7 @@ export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpd
   const formatLabel = MATCH_FORMATS[matchFormat].label
 
   async function handleShare() {
-    const result = await shareMatchResult(match)
+    const result = await shareMatchResult(match, cardRef.current)
     if (result === 'copied') {
       setToast('Resultado copiado')
       setTimeout(() => setToast(null), 2500)
@@ -170,6 +172,8 @@ export default function MatchDetail({ match, onBack, onRequestDelete, onNamesUpd
           {toast}
         </div>
       )}
+
+      <ShareCard ref={cardRef} match={match} />
     </div>
   )
 }
